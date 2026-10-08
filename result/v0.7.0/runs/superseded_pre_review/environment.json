@@ -1,0 +1,14 @@
+{
+  "python": "3.12.13 (main, Mar  3 2026, 15:35:03) [Clang 21.1.4 ]",
+  "platform": "macOS-26.2-arm64-arm-64bit",
+  "machine": "arm64",
+  "numpy": "2.4.4",
+  "torch": "2.11.0",
+  "torch_num_threads": 1,
+  "torch_num_interop_threads": 1,
+  "checkpoint_path": "result/v0.6.0/runs/final_gz_02/checkpoints/cell_state.pt",
+  "checkpoint_sha256": "b8df57150d9030f2690eb11a7977af8c7b629e43eec228678d186d2c102168c5",
+  "stage_config_sha256": "e91b71dc8799bdbbdcf83b50523490e7ef3c228779bbfb3cc18d9993f3e4ae33",
+  "contract_sha256": "6a23a4a86f323cccff3aa564aa4f92b79b11fffd330ce4ff10b2590ff490a289",
+  "source_sha256": "5a389f976c96a6a9287ca1cc8696528f15294213c23a5483376aeb0be17fe186"
+}

@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/Users/yyl/Desktop/workshop/NMI/IRCN/model/v0.7.0/run_parity.py", line 234, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/Users/yyl/Desktop/workshop/NMI/IRCN/model/v0.7.0/run_parity.py", line 111, in main
+    run_dir.mkdir(parents=True, exist_ok=False)
+  File "/Users/yyl/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py", line 1311, in mkdir
+    os.mkdir(self, mode)
+FileExistsError: [Errno 17] File exists: '/Users/yyl/Desktop/workshop/NMI/IRCN/result/v0.7.0/runs/final_candidate_review_01'

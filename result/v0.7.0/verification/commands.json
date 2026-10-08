@@ -1,0 +1,64 @@
+{
+  "python": "3.12.13 (main, Mar  3 2026, 15:35:03) [Clang 21.1.4 ]",
+  "platform": "macOS-26.2-arm64-arm-64bit",
+  "cwd": "/Users/yyl/Desktop/workshop/NMI/IRCN",
+  "commands": [
+    {
+      "name": "targeted_pytest",
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "model/v0.7.0/tests/test_runtime_bridge.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout_file": "targeted_pytest.stdout.txt",
+      "stderr_file": "targeted_pytest.stderr.txt"
+    },
+    {
+      "name": "repository_pytest",
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout_file": "repository_pytest.stdout.txt",
+      "stderr_file": "repository_pytest.stderr.txt"
+    },
+    {
+      "name": "py_compile",
+      "command": [
+        "python",
+        "-m",
+        "py_compile",
+        "model/v0.7.0/src/ircn_v07.py",
+        "model/v0.7.0/run_parity.py"
+      ],
+      "exit_code": 0,
+      "stdout_file": "py_compile.stdout.txt",
+      "stderr_file": "py_compile.stderr.txt"
+    },
+    {
+      "name": "duplicate_run_id",
+      "command": [
+        "python",
+        "model/v0.7.0/run_parity.py",
+        "--run-id",
+        "final_candidate_review_01"
+      ],
+      "exit_code": 1,
+      "stdout_file": "duplicate_run_id.stdout.txt",
+      "stderr_file": "duplicate_run_id.stderr.txt"
+    },
+    {
+      "name": "manifest_hash_audit",
+      "command": "independent Python SHA-256 audit of manifest source_file_sha256 and output_file_sha256",
+      "exit_code": 0,
+      "stdout_file": "manifest_hash_audit.json",
+      "stderr_file": null
+    }
+  ]
+}
