@@ -1,0 +1,50 @@
+{
+  "stage": "IRCN v0.4.1 Phase II",
+  "status": "PARTIAL_METRIC_PROTOTYPE_NO_SCIENTIFIC_EXPERIMENT",
+  "source_inputs": "Synthetic inline known-answer arrays only; no external task or connectome data",
+  "tests": {
+    "icef_prototype": "9 passed",
+    "existing_regression": "47 passed"
+  },
+  "diagnostic_tasks": "Three candidate specifications written; not implemented or run",
+  "experiments_run": false,
+  "connectome_data_used": false,
+  "files": {
+    "model/v0.4.1/DIAGNOSTIC_TASKS_v0.1.md": {
+      "sha256": "686c7adeae604184831931929bb090da226b72aab0197a97d9a37214c8a826f1",
+      "bytes": 4925
+    },
+    "model/v0.4.1/ICEF_PROTOCOL_v0.1.md": {
+      "sha256": "0ae376fbe3069908b3571744201103f4ce4ee395844f8ce2623b9a9442793649",
+      "bytes": 5329
+    },
+    "model/v0.4.1/README.md": {
+      "sha256": "cff2467e079eb9c1a5f32d18f588b9633f76569c91a4b469cda1bd3e7099bd40",
+      "bytes": 544
+    },
+    "model/v0.4.1/__pycache__/icef_metrics.cpython-312.pyc": {
+      "sha256": "0e07afd16455861e195ba67c3a30615cf90d5f46613621c9851821ccc21eab1b",
+      "bytes": 11285
+    },
+    "model/v0.4.1/__pycache__/test_icef_metrics.cpython-312-pytest-9.1.1.pyc": {
+      "sha256": "e47f7212bbe5ad59462206d76e357496502d2c6b2264015dbc8cdcac6c7fc7e8",
+      "bytes": 15963
+    },
+    "model/v0.4.1/icef_metrics.py": {
+      "sha256": "d9ced7d47e2ba7a175fc0aca8733446e6e7edc910356edc85b4b8f84650a317b",
+      "bytes": 6530
+    },
+    "model/v0.4.1/test_icef_metrics.py": {
+      "sha256": "7d8a5fce854d54fc320a11c922664b55142a3854774540c6b06fd7d6cfbd4c00",
+      "bytes": 2581
+    },
+    "result/v0.4.1/EVALUATION.csv": {
+      "sha256": "7eda3ff8cbb2f9877d4fc27f9a5ecb237b02a322c2fdcc5dc7a0d80d9a648428",
+      "bytes": 288
+    },
+    "result/v0.4.1/PHASE_II_REPORT.md": {
+      "sha256": "64c008583e3822f56e930b095a1d7e8092d9120c2cbcf8f0cf842ded63b71f3c",
+      "bytes": 3613
+    }
+  }
+}

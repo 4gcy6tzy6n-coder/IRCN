@@ -1,0 +1,11 @@
+# IRCN v0.4.1 — Phase II ICEF prototype
+
+This directory contains metric definitions and a small executable metric library. It is measurement-system development only: no trained IRCN, real task, connectome, or comparative capability experiment is included.
+
+Run the known-answer checks from the repository root with:
+
+```sh
+python -m pytest model/v0.4.1/test_icef_metrics.py
+```
+
+See `ICEF_PROTOCOL_v0.1.md` for estimands, required controls, units, and boundaries; `DIAGNOSTIC_TASKS_v0.1.md` contains unexecuted candidate task specifications.
