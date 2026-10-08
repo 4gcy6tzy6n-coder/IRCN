@@ -1,4 +1,4 @@
 scope,tests_passed,tests_failed,status,notes
-ICEF metrics and task generators,20,0,PASS,Known-answer metric/task fixtures and input-contract tests only
+ICEF metrics task generators and toy runner,23,0,PASS,Known-answer metric/task fixtures and input-contract tests only
 Existing regression suite,47,0,PASS,Regression evidence; not ICEF construct validation
 Scientific task experiments,0,0,NOT_RUN,No capability or connectome inference

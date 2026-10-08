@@ -1,38 +1,47 @@
 {
   "stage": "IRCN v0.4.1 Phase II",
-  "status": "EXECUTABLE_MEASUREMENT_PROTOTYPE_NO_SCIENTIFIC_EXPERIMENT",
+  "status": "EXECUTABLE_MEASUREMENT_PROTOTYPE_NO_CONFIRMATORY_EXPERIMENT",
   "source_inputs": "Synthetic deterministic generated reference trajectories and inline known-answer fixtures only",
   "tests": {
-    "ICEF metrics and diagnostic generators": "20 passed",
+    "ICEF metrics tasks toy runner": "23 passed",
     "existing regression": "47 passed"
   },
+  "diagnostic_control_rows": 50,
   "experiments_run": false,
   "connectome_data_used": false,
-  "stateful_baseline_runtime_comparison": false,
+  "wall_clock_measured": false,
   "files": {
     "model/v0.4.1/DIAGNOSTIC_TASKS_v0.1.md": {
       "sha256": "686c7adeae604184831931929bb090da226b72aab0197a97d9a37214c8a826f1",
       "bytes": 4925
     },
     "model/v0.4.1/ICEF_PROTOCOL_v0.1.md": {
-      "sha256": "13ffb117f878e07532cfef045d1aff8d831fe96ffaf0f761f7980c1db296bfc9",
-      "bytes": 5638
+      "sha256": "4225d323af1b34bacaa22eff24199128117979cfbb4c06cec7396586c268a227",
+      "bytes": 5762
     },
     "model/v0.4.1/README.md": {
-      "sha256": "24501712b67bd223443a3d93763e4788779db10085774130c81159cb407a4b5b",
-      "bytes": 555
+      "sha256": "a7ccdecee4f130481acab509626c8e80eff0b2df53be5fccd6cfa5a77588c5ae",
+      "bytes": 650
+    },
+    "model/v0.4.1/__pycache__/diagnostic_harness.cpython-312.pyc": {
+      "sha256": "bf125b6ecfd41e7df628ad641b9332fd2b27812be6fb625e98d44ef1f29b3119",
+      "bytes": 6643
     },
     "model/v0.4.1/__pycache__/diagnostic_tasks.cpython-312.pyc": {
-      "sha256": "0f089aa01f6ff8ab2abce5f0fc9e6310b0bc0f37655819d96d26c571ae90d3d6",
+      "sha256": "104972a03afb8554282fe4924dd624ffaf825c1b652a56047caf8964e2de4833",
       "bytes": 7033
     },
     "model/v0.4.1/__pycache__/icef_metrics.cpython-312.pyc": {
-      "sha256": "0e07afd16455861e195ba67c3a30615cf90d5f46613621c9851821ccc21eab1b",
+      "sha256": "f4251d7c7e5d45b855a1733c3ef995e9f7a7e25746aece04fdfd483b607c13d2",
       "bytes": 11285
     },
     "model/v0.4.1/__pycache__/test_icef_metrics.cpython-312-pytest-9.1.1.pyc": {
-      "sha256": "72d77281b01d61b3f624c6360c860283cec52a0d0bd2b2a4dd1bc29e98eb7a87",
-      "bytes": 32836
+      "sha256": "86494273cc522abd0e8b5232a1383fe78318b55aa0097c02f7cdb08d67a5a8ff",
+      "bytes": 39811
+    },
+    "model/v0.4.1/diagnostic_harness.py": {
+      "sha256": "788493383a9e74a65e864e8a2a151082e1dacb49787fe6c9914616df1437d578",
+      "bytes": 4312
     },
     "model/v0.4.1/diagnostic_tasks.py": {
       "sha256": "436e08030aa1409756c96a60d1399b5001411129db163904deb84a47e37987fc",
@@ -43,16 +52,20 @@
       "bytes": 6530
     },
     "model/v0.4.1/test_icef_metrics.py": {
-      "sha256": "dce3eb2de7cf6ff10219a3405260fcedca933eb36a3c819ce00270f516eebd2d",
-      "bytes": 5074
+      "sha256": "f1050a1f1c864c09328201dae1c1ca765f6003aab98ee02931cc343b64f3fe9e",
+      "bytes": 6284
+    },
+    "result/v0.4.1/DIAGNOSTIC_CONTROL_RESULTS.csv": {
+      "sha256": "cadfd742deea696ff3755c8bf670eee5f68e12a5424711c132a89bdbee878d02",
+      "bytes": 3988
     },
     "result/v0.4.1/EVALUATION.csv": {
-      "sha256": "4123a6d946c6030113f81e5e61672c45109dd3329856eb11cff817ca7e71c018",
-      "bytes": 317
+      "sha256": "7f1b3ce28769dff81f0b48fbe7adebe11dd1ee89b2722827c82f30f6f1715776",
+      "bytes": 328
     },
     "result/v0.4.1/PHASE_II_REPORT.md": {
-      "sha256": "7082f51c7cb9001f220a559f20064c97f0ff642dd16e3c1a188f10220cb2f14f",
-      "bytes": 3764
+      "sha256": "e51a4c8cdcecbdad0be3996cc881bd0b71fc349d7b654316fff4823960e13834",
+      "bytes": 4779
     }
   }
 }

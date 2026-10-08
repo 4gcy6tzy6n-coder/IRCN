@@ -1,4 +1,5 @@
 import importlib.util
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -11,6 +12,8 @@ spec.loader.exec_module(icef)
 task_spec = importlib.util.spec_from_file_location("diagnostic_tasks", Path(__file__).with_name("diagnostic_tasks.py"))
 tasks = importlib.util.module_from_spec(task_spec)
 task_spec.loader.exec_module(tasks)
+sys.path.insert(0, str(Path(__file__).parent))
+import diagnostic_harness as harness
 
 
 def test_c1_known_selectivity_and_undefined_groups():
@@ -115,3 +118,27 @@ def test_budget_controls_are_exact_reproducible_and_oracle_discriminates():
 def test_oracle_schedule_requires_explicit_known_answer():
     with pytest.raises(ValueError):
         tasks.budget_matched_schedule(np.zeros((2, 2)), 1, method="oracle")
+
+
+def test_stateful_update_all_matches_sparse_and_multiscale_references():
+    sparse = tasks.sparse_propagation()
+    sparse_run = harness.run_sparse(np.ones_like(sparse["inputs"], dtype=bool))
+    assert sparse_run["loss"] == pytest.approx(0.0)
+    multi = tasks.multiscale_integration()
+    multi_run = harness.run_multiscale(np.ones((200, 2), dtype=bool))
+    assert multi_run["loss"] == pytest.approx(0.0)
+
+
+def test_stateful_budget_matched_controls_reveal_quiet_memory_miss():
+    results = harness.compare_memory_methods(cue=1, delay=20, budget=1, seed=9)
+    assert {v["updates"] for v in results.values()} == {1, 22}
+    assert results["oracle"]["loss"] == 0
+    assert results["activity"]["loss"] == 0
+    assert results["periodic"]["loss"] == 1
+
+
+def test_stateful_sparse_controls_charge_selected_transitions():
+    results = harness.compare_sparse_methods(budget=128, seed=3)
+    assert results["update_all"]["loss"] == pytest.approx(0.0)
+    assert results["oracle"]["loss"] == pytest.approx(0.0)
+    assert all(results[name]["updates"] == 128 for name in ("periodic", "random", "activity", "oracle"))
