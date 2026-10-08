@@ -1,0 +1,53 @@
+{
+  "stage": "IRCN v0.4.2 ICEF metric hardening",
+  "status": "READY_SCOPED_CODE_FIX_NO_SCIENTIFIC_CLAIM",
+  "parent_commit": "42ffcf87c400cd7007df3749db08aa1eac51b2db",
+  "review_mode": "separate self-review, not independent",
+  "pre_review_findings": [
+    "F1 major mask coercion",
+    "F2 major timestamp order",
+    "F3 major recovery parameter validity",
+    "F4 minor k type validation"
+  ],
+  "tests": {
+    "hardening": "18 passed",
+    "v0.4.1 regression": "23 passed",
+    "repository regression": "47 passed"
+  },
+  "previous_version_modified": false,
+  "scientific_experiment_run": false,
+  "files": {
+    "model/v0.4.2/README.md": {
+      "sha256": "ee6ae3fcec793ad27cc31dcea57152fcfa8b66d0f4ef9ee02ad7335377eabf17",
+      "bytes": 499
+    },
+    "model/v0.4.2/__pycache__/icef_metrics.cpython-312.pyc": {
+      "sha256": "4b20de86ae265ef3e55b2ab6cadf62741abc85f392f03094effe398d26249e15",
+      "bytes": 12756
+    },
+    "model/v0.4.2/__pycache__/test_metric_hardening.cpython-312-pytest-9.1.1.pyc": {
+      "sha256": "994a7e5230072f3b168155981aa27fbc9dd4d515c48f37c9abb111b7f7e21239",
+      "bytes": 6785
+    },
+    "model/v0.4.2/icef_metrics.py": {
+      "sha256": "a4a6c876a20ebd9dcf26e69d5c7f2763750e9bf4a7163031fd5cf3ef22829ad4",
+      "bytes": 7311
+    },
+    "model/v0.4.2/test_metric_hardening.py": {
+      "sha256": "ffbef952ed9979f3401ea46d8e92b7cdced2eb64aa83fa095d638f2559310d26",
+      "bytes": 1833
+    },
+    "result/v0.4.2/EVALUATION.csv": {
+      "sha256": "d16d1f97132e2215d7fc48d5124c31c200f137f1c9334220291d9072d14b5fb4",
+      "bytes": 418
+    },
+    "result/v0.4.2/METRIC_HARDENING_REVIEW.md": {
+      "sha256": "edde8947dc3d9e70c255101d5f6678bf725f2dd022d22a9474ec762b0e3c2c76",
+      "bytes": 2451
+    },
+    "result/v0.4.2/PRE_IMPLEMENTATION_REVIEW.md": {
+      "sha256": "acdce1b81117e523008c474fe05b7cee24681e2089622536dd6b72e6b94113b3",
+      "bytes": 1998
+    }
+  }
+}
