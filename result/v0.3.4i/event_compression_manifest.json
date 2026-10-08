@@ -1,0 +1,16 @@
+{
+  "original_gzip6": {
+    "sha256": "968986e32c84b041d957c2b5fd2e3e3be690f249d8bb772e05283838664eaacc",
+    "bytes": 115864869
+  },
+  "published_gzip9": {
+    "sha256": "f367a6997adec06263d4408ab96768b96b688dc7c3850f31a1bcc83e6a4d3426",
+    "bytes": 97159953
+  },
+  "decompressed_content": {
+    "sha256": "576a8b04f407c942d97c422e5ac6eb3a9445fa1fe9b0732c0ee86326aa982932",
+    "bytes": 2688148617
+  },
+  "equivalent": true,
+  "reason": "Lossless recompression to satisfy GitHub 100 MB per-file limit; original retained in local evidence."
+}

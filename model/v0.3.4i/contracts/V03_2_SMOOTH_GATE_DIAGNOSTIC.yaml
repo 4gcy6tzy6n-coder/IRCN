@@ -1,0 +1,26 @@
+contract_id: IRCN-v0.3.2-smooth-gate-diagnostic
+status: PROSPECTIVE_DIAGNOSTIC_ONLY
+parent_diagnostic: contracts/V03_2_ODE_SEGMENT_DIAGNOSTIC.yaml
+purpose: Measure smooth-input interpolation accuracy and implementation cost as the frozen input gate interval is reduced.
+not_a_scientific_gate: true
+scope:
+  graph_families: [chain, feedback_ring]
+  population_sizes: [16]
+  tasks: [smooth]
+  calibration_seeds: [101]
+  confirmatory_seeds_used: false
+  duration_seconds: 0.2
+  sample_dt_seconds: 0.01
+candidate:
+  solver: causal_local_ode_segments
+  segment_tolerance: 1.0e-7
+  max_interval_seconds: 0.05
+  input_gate_intervals_seconds: [0.01, 0.005, 0.002, 0.001]
+  integration_rtol: 1.0e-9
+  integration_atol: 1.0e-11
+oracle:
+  solver: DOP853
+  rtol: 1.0e-13
+  atol: 1.0e-15
+metrics: [relative_nrmse, max_absolute_error, wall_clock_seconds, rhs_evaluations, event_count]
+interpretation_boundary: Calibration diagnostic only; no correctness gate, efficiency claim, or confirmatory inference.

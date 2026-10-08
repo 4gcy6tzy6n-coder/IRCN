@@ -1,0 +1,1 @@
+{"contract_sha256": "2b031c90b4ddba6e476e3fcc1a0c05d96f8669def3647942d14f0cdb77286ad7", "driven_count": 1, "failure": "KeyError('input_mode')", "graph": "chain", "input_sha256": "3be5e7ee93d9ea33c7f02dd871e3a27aac8ba6b7a7daa5d00422bbbe9fc9537e", "method": "exact_exogenous_ode_segment", "n": 16, "nonzero_U_rows": 1, "seed": 293, "task": "smooth"}

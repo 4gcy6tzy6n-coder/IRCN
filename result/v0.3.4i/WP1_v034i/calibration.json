@@ -1,0 +1,24 @@
+{
+  "contract": "contracts/V03_4I_LOCAL_BATCH2_CALIBRATION.yaml",
+  "contract_sha256": "0587a37039ddeb785d5c14b035ca5415d5fda0634598880172f2df0d06dc8db8",
+  "code_sha256": {
+    "src/events/ode_segment_scheduler.py": "67df7cfb70c734db0dfb6833148cac4545d78fdfaf5a17770deb222fab420a3d",
+    "src/events/inputs.py": "eecd35cd0a78d2f14428a42a451d41e1fb1aed5a78a27f61bcb6de189e0c15ff",
+    "src/dynamics/tasks.py": "bfa5d2b331f97e70541eebc8ba124548794d2cb4f45b3cd609a70970c5a486af",
+    "src/solvers/oracle.py": "9ebea48726cded0ce84b867bfb735c9fbae47aceb321b489c056625fab3d3019",
+    "experiments/WP1_v034i/calibrate_local_batch2.py": "ea37cc6f568da2b47e75c404089c5e7066ceb2990bd07d881e6f29a1994c1c7b"
+  },
+  "status": "FULL_CALIBRATION_SCOPE_PASSED",
+  "scope_instances": 96,
+  "completed_instances": 96,
+  "runtime_failures": 0,
+  "accuracy_pass_rows": 96,
+  "accuracy_fail_rows": 0,
+  "nrmse_limit": 6.837551017609374e-08,
+  "max_nrmse": 5.5742639352578454e-09,
+  "confirmatory_seeds_used": false,
+  "downstream_science_executed": false,
+  "elapsed_seconds": 1883.6393109159544,
+  "raw_rows": "calibration_raw.jsonl",
+  "event_log": "events.jsonl.gz"
+}

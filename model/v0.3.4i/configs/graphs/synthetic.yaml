@@ -1,0 +1,4 @@
+nodes: [16, 64, 128]
+kind: [chain, star, feedback_ring, modular_sparse]
+weight_seed_offset: 100000
+self_loops: false

@@ -1,0 +1,68 @@
+contract_id: IRCN-v0.3-pre-registration-2
+status: FROZEN_BEFORE_ORACLE_AUDIT_AND_CONFIRMATORY_WP1
+source_document_sha256: 7f7e695c8ba1fa4f3d71808a8512496b93898b326efa0cea662c046a7cd4d5bf
+parent_commit: 2e9896e4abc632428fa6884663036383bb92b419
+branch: v0.3-development
+claims:
+  A: numerical fidelity and measured compute savings
+  B: task generalization/prediction utility
+  C: connectome-specific increment / biological mechanism
+  algorithmic_counterfactual_is_not_biological_causality: true
+scope:
+  hardware: CPU only, one process, single-threaded BLAS where controllable
+  populations: [16, 64, 128]
+  graph_families: [chain, star, feedback_ring, modular_sparse]
+  tasks: [smooth, sparse_pulse, dense_burst, state_switch]
+  duration_seconds: 2.0
+  sample_dt_seconds: 0.01
+  seeds: [11, 23, 37, 53, 71]
+  calibration_seeds: [101, 131]
+  solver:
+    state_equation: "dh/dt = (-h + tanh(W h + U x(t) + b)) / tau"
+    tau_range: [0.5, 2.0]
+    weights: "signed sparse; row absolute sum <= 0.5; deterministic graph-specific seed"
+    oracle: "SciPy DOP853 rtol=1e-11 atol=1e-13, dense output sampled at observation times"
+    fixed_sync: "RK4 dt=0.0025s"
+  inputs:
+    driven_fraction: 0.05
+    smooth_frequency_hz: 0.5
+    pulse_width_seconds: 0.02
+    pulse_rate_hz: 1.0
+    dense_burst_rate_hz: 8.0
+    state_switch_period_seconds: 0.25
+  tolerances:
+    oracle_audit_relative_nrmse_max: 1.0e-7
+    trajectory_nrmse_noninferiority: 1.0e-8
+    derivation_rule: "max(1e-8, 100 * max relative NRMSE between independently tightened DOP853 oracle runs at rtol/atol 1e-11/1e-13 and 1e-13/1e-15 over all frozen WP1 graph/task/seed instances)"
+    max_absolute_error_report_only: true
+    values_status: "derived by frozen rule after oracle audit; not inherited from v0.2"
+  event_scheduler:
+    gate_period_seconds: 0.01
+    thresholds: [0.01, 0.03, 0.1]
+    fallback_max_interval_seconds: 0.05
+    calibration_only_seeds: [101, 131]
+    labels_offline_only: true
+    exact_full_graph_gradient_at_inference: false
+  repetitions:
+    warmups: 2
+    timed: 5
+    statistical_unit: seed
+  statistics:
+    paired_by_seed: true
+    confidence_level: 0.95
+    bootstrap_resamples: 10000
+    primary_comparator: lowest_latency_baseline_meeting_nrmse_noninferiority
+    minimum_latency_improvement: 0.10
+  stopping:
+    gate_failure_blocks_descendants: true
+    no_claim_without_gate: true
+    retain_failures_timeouts_exceptions: true
+    no_hardware_or_dataset_scope_expansion_without_contract_amendment: true
+  gate_status:
+    WP1: NOT_RUN
+    WP2: BLOCKED_UNTIL_WP1_PASS
+    WP3: BLOCKED_UNTIL_WP1_AND_WP2_PASS
+    WP4: BLOCKED_UNTIL_WP1_WP3_PASS
+    WP5: BLOCKED_UNTIL_WP1_WP3_PASS
+    WP6: BLOCKED_UNTIL_FIXED_ALGORITHM
+    WP7: REQUIRED_FINAL_SYNTHESIS

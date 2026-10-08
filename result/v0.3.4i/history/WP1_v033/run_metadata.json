@@ -1,0 +1,15 @@
+{
+  "contract": "contracts/V03_3_ODE_SEGMENT_CALIBRATION.yaml",
+  "contract_sha256": "82c0113e5f537265e9d186a549b50c86f17338b193e8b266c14854d25286ce1b",
+  "python": "3.12.13",
+  "executable": "/Users/yyl/.local/share/uv/python/cpython-3.12-macos-aarch64-none/bin/python3",
+  "platform": "macOS-26.2-arm64-arm-64bit",
+  "machine": "arm64",
+  "scope": "partial v0.3.3 calibration screen; seeds 101 and 131; confirmatory seeds not used",
+  "wp1_status": "STOP_CANDIDATE_AFTER_DECISIVE_CALIBRATION_ACCURACY_FAILURE",
+  "confirmatory_evaluation": false,
+  "downstream_science_executed": false,
+  "test_suite": "33 passed",
+  "manifest": "source_hashes_v033.csv",
+  "manifest_rows": 223
+}

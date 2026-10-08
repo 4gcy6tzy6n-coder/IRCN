@@ -1,0 +1,39 @@
+contract_id: IRCN-v0.3.4b-exact-exogenous-input-candidate
+status: FROZEN_BEFORE_CALIBRATION
+supersedes: contracts/V03_4_EXACT_INPUT_CALIBRATION.yaml
+reason_for_new_calibration_seeds: Calibration seed 211 was exposed to a short candidate diagnostic before the full calibration protocol; it is excluded from this calibration set.
+scope:
+  graph_families: [chain, star, feedback_ring, modular_sparse]
+  population_sizes: [16, 64, 128]
+  tasks: [smooth, sparse_pulse, dense_burst, state_switch]
+  calibration_seeds: [241, 251]
+  confirmatory_seeds: [311, 331, 337, 347, 349]
+  duration_seconds: 2.0
+  sample_dt_seconds: 0.01
+input:
+  driven_fraction: 0.05
+  mapping: "U is zero outside selected driven node rows; U[i,i] is the only nonzero input gain in each selected row"
+  pulse_boundary: "pulse is off at its exact declared falling-edge breakpoint; rising edges are on"
+  external_input_integration: "evaluate x(t) directly at local ODE stages; no linear extrapolation or periodic input gate"
+  discontinuities: "truncate local segments at the next declared input breakpoint and rebuild affected nodes at that time"
+candidate:
+  solver: causal_local_ode_segments
+  input_mode: exact_exogenous
+  segment_tolerance: 1.0e-7
+  max_interval_seconds: 0.05
+  local_integrator: DOP853
+  local_rtol: 1.0e-9
+  local_atol: 1.0e-11
+oracle:
+  solver: segmented_DOP853
+  rtol: 1.0e-13
+  atol: 1.0e-15
+accuracy:
+  relative_nrmse_limit: 6.837551017609374e-08
+  derivation_contract: contracts/V03_1_CONTRACT_DRAFT.yaml
+screen_rule: Every calibration instance must be finite and at or below the frozen limit. Stop at the first decisive violation; no confirmatory evaluation unless all calibration instances pass.
+metrics: [relative_nrmse, max_absolute_error, wall_clock_seconds, rhs_evaluations, event_count, queue_pushes]
+timing_boundary: Calibration latency is diagnostic only; no efficiency inference is authorized.
+downstream:
+  e2: DO_NOT_RUN_IN_THIS_VERSION
+  wp2_wp6: BLOCKED_UNTIL_VALID_WP1_PASS
