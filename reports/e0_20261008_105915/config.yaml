@@ -1,0 +1,115 @@
+study:
+  id: IRCN-M0-M2-E0-E1-v1
+  proposal_version: v0.2
+  status: FROZEN_BEFORE_E1
+  date: 2026-10-08
+  proposal_path: /Users/yyl/Downloads/IRCN_%E7%94%9F%E7%89%A9%E8%BF%9E%E6%8E%A5%E7%BB%84%E9%A9%B1%E5%8A%A8%E7%9A%84%E4%B8%8D%E8%A7%84%E5%88%99%E7%A5%9E%E7%BB%8F%E8%AE%A1%E7%AE%97_%E9%A1%B9%E7%9B%AE%E7%A0%94%E7%A9%B6%E6%96%B9%E6%A1%88.md
+  proposal_sha256: 2b6b423a954b34e97f91e8e30a33441b0d970d2add707d21c778a09b4f0c5fc6
+  claims_in_scope:
+    - deterministic numerical agreement and convergence behavior on the declared synthetic ODEs
+    - CPU end-to-end latency at stated accuracy on this machine
+  claims_out_of_scope:
+    - biological/connectome specificity (E2)
+    - task learning or AI transfer (E3)
+    - CPU/GPU/hybrid comparison (E4)
+    - general claims about AI or hardware
+
+system:
+  state_equation: "dh/dt = (-h + tanh(W @ h + U * x(t) + b)) / tau"
+  activation: tanh
+  bias: 0.0
+  initial_state: 0.0
+  graph:
+    type: directed_erdos_renyi
+    sizes: [64, 128, 256]
+    edge_probability: "4/N"
+    self_loops: false
+    weight_distribution: "Normal(0, 1/sqrt(4)) on existing edges"
+    spectral_radius_rescale: 0.65
+    tau_distribution: "log-uniform[0.5, 2.0] seconds"
+    input_gain_distribution: "Normal(0, 0.2)"
+  integration:
+    horizon_seconds: 10.0
+    report_interval_seconds: 0.01
+    fixed_rk4_step_seconds: 0.005
+    local_rk4_max_step_seconds: 0.005
+    oracle_method: DOP853
+    oracle_rtol: 1.0e-12
+    oracle_atol: 1.0e-14
+    adaptive_baseline_rtol: 1.0e-7
+    adaptive_baseline_atol: 1.0e-9
+    pulse_breakpoints_are_solver_boundaries: true
+  workloads:
+    co_primary:
+      - sparse_pulses
+      - smooth_periodic
+    driven_fraction: 0.05
+    sparse_pulses:
+      per_driven_node_rate_hz: 0.25
+      amplitude: 1.0
+      width_seconds: 0.05
+      arrival_process: poisson
+    smooth_periodic:
+      frequency_hz: 0.25
+      amplitude: 0.2
+      phase: "seeded independently per driven node"
+      offset: 0.0
+  seeds:
+    threshold_calibration: 8675309
+    evaluation: [101, 211, 307, 401, 503, 601, 701, 809, 907, 1009]
+    evaluation_unit: graph_and_input_seed
+    paired_across_methods: true
+  threshold_calibration:
+    candidates: [0.00001, 0.00003, 0.0001, 0.0003, 0.001, 0.003, 0.01]
+    modes: {P: ircn, B2: input_event}
+    rule: "Independently for P and B2, choose the largest threshold whose NRMSE is <= 1e-3 on the calibration seed for both workloads and all graph sizes. If P has no qualifying threshold, do not open E1. If B2 has none, preserve B2 as calibration-failed and do not run it in E1 or treat it as a comparator."
+    freeze_before_evaluation: true
+
+methods:
+  oracle: "DOP853 at oracle tolerances; excluded from timed comparisons"
+  B0: "dense all-to-all topology, synchronous fixed-step RK4; contextual reference only"
+  B1: "declared sparse graph, SciPy DOP853 adaptive solver"
+  B2: "declared sparse graph, input/arrival-triggered event propagation with uniform accumulated-input threshold"
+  B3: "declared sparse graph, synchronous fixed-step RK4"
+  P: "declared sparse graph, local event scheduler using accumulated weighted neighbor deltas plus a local drift bound; inactive states held, then locally RK4-refined"
+  strongest_baseline_rule: "For each workload, eligible B1/B2/B3 methods must meet the NRMSE limit; select the lowest across-seed median end-to-end latency. B0 is reported separately and is not the G1 comparator because its topology differs."
+  no_full_state_prefilter: true
+
+metrics:
+  primary_quality: "NRMSE = sqrt(mean((trajectory - oracle)^2)) / max(sqrt(mean(oracle^2)), 1e-12), over all nodes and report times"
+  nrmse_max: 0.001
+  secondary_quality: [maximum_absolute_error, solver_failure_rate]
+  primary_cost: end_to_end_wall_clock_seconds
+  secondary_cost: [p50_latency_seconds, p95_latency_seconds, trajectories_per_second, peak_rss_bytes, node_refinements, rhs_evaluations, queue_operations]
+  clock: "time.perf_counter; includes method initialization, scheduling, queue processing, synchronization, output collection; oracle excluded"
+  cpu_only: true
+  warmup_runs_per_seed: 3
+  measured_runs_per_seed: 10
+  repetitions_are_not_independent_units: true
+
+statistics:
+  unit: seed
+  paired: true
+  seed_summary: "median of 10 measured runtime repetitions per seed and method"
+  interval: "95% paired Student-t confidence interval on log latency ratios, exponentiated"
+  null_for_g1: "mean log latency ratio >= log(0.90)"
+  test: "one-sided paired t test across 10 seed-level log ratios"
+  family: "all 6 contrasts (B1/B2/B3 x two co-primary workloads)"
+  multiplicity: Holm-Bonferroni alpha=0.05
+  g1_workload_pass: "P NRMSE <= 1e-3, selected strongest baseline is eligible, point estimate of P/baseline latency <= 0.90, 95% CI upper bound < 1.0, and Holm-adjusted p < 0.05 against 0.90"
+  g1_overall_pass: "both co-primary workloads pass"
+
+runtime:
+  target: "Apple M4, macOS arm64, CPU only, one process, NumPy/BLAS threading pinned to 1"
+  thread_env: [OPENBLAS_NUM_THREADS, OMP_NUM_THREADS, VECLIB_MAXIMUM_THREADS]
+  raw_runs_append_only: true
+  retain_failures_timeouts_exceptions: true
+
+stop_rules:
+  - "Any critical T0-T6 failure means G0 FAIL; do not run or report E1 efficiency claims."
+  - "E1 can start only after a fresh complete T0-T6 pass and signed E0 PASS report."
+  - "At most one profiling-justified implementation-only bottleneck repair and full G0/E1 rerun is allowed; no task, threshold, seed, comparator, or metric changes. Preserve both attempts."
+  - "Both workloads pass: CONTINUE recommendation to preregister E2; do not execute E2 in this project turn."
+  - "Exactly one workload passes: PIVOT to that workload; no E2 until a separate preregistration narrows the claim."
+  - "Neither passes after any allowed repair, or G0 cannot be made to pass: STOP this acceleration/connectome-extension route; no E2."
+  - "No E2/E3/E4, no connectome ingestion, no changes to NeuroConverge or nmi_feedback_routing."
