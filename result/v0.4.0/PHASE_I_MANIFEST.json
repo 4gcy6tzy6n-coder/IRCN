@@ -1,0 +1,31 @@
+{
+  "stage": "IRCN v0.4 Phase I",
+  "status": "DESIGN_COMPLETE_IMPLEMENTATION_NOT_STARTED",
+  "plan_v03_sha256": "7f7e695c8ba1fa4f3d71808a8512496b93898b326efa0cea662c046a7cd4d5bf",
+  "wp2_contract_sha256": "f81da88afa5bc6d3a5ae204132f7afa74b32a00afdf7ecc6a1e2fc0f43574328",
+  "files": {
+    "model/v0.4.0/README.md": {
+      "sha256": "7d87e2004eb33b2912366bf375e3df9da79b805e6d24c902d924acb07fa77651",
+      "bytes": 308
+    },
+    "model/v0.4.0/architecture_semantics_v0.1.md": {
+      "sha256": "cc50f52cce441497fa253aad36e10ad86879ef1965207c1ff85ecd824c22b3f6",
+      "bytes": 9941
+    },
+    "model/v0.4.0/related_work_matrix.md": {
+      "sha256": "a28ca76edaa0abdc9ad68d3a52f795d3e0606becc165fc86e153ebe3e5137b11",
+      "bytes": 5603
+    },
+    "result/v0.4.0/PHASE_I_REPORT.md": {
+      "sha256": "61f1f8746e53cb0596536b211ce8c60196d48d5b9de74bd0030db24d49b5c876",
+      "bytes": 4767
+    },
+    "result/v0.4.0/RELATED_WORK_MATRIX.md": {
+      "sha256": "a28ca76edaa0abdc9ad68d3a52f795d3e0606becc165fc86e153ebe3e5137b11",
+      "bytes": 5603
+    }
+  },
+  "experiments_run": false,
+  "connectome_data_used": false,
+  "originality_claim_made": false
+}
