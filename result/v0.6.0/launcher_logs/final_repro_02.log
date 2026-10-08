@@ -1,0 +1,1 @@
+{"run_id": "final_repro_02", "run_dir": "result/v0.6.0/runs/final_repro_02", "cell": {"macro_mean_test_nrmse": 0.29451894208776125, "macro_mean_baseline_nrmse": 3.1055013326986693, "learnability_descriptor": "BEATS_BASELINE", "test_trajectory_count": 320, "nonconstant_count": 320, "undefined_count": 0}, "predictor_best_epoch": 50, "train_labels": 122880, "test_labels": 122880}

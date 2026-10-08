@@ -1,0 +1,40 @@
+{
+  "train": {
+    "rows": 122880,
+    "unique_opportunities": 122880,
+    "strata": {
+      "path": 30720,
+      "isolated": 92160
+    },
+    "status": "PASS"
+  },
+  "validation": {
+    "rows": 61440,
+    "unique_opportunities": 61440,
+    "strata": {
+      "path": 15360,
+      "isolated": 46080
+    },
+    "status": "PASS"
+  },
+  "test": {
+    "rows": 122880,
+    "unique_opportunities": 122880,
+    "strata": {
+      "path": 30720,
+      "isolated": 92160
+    },
+    "status": "PASS"
+  },
+  "test_predictions": {
+    "rows": 122880,
+    "predictor_checkpoint_consistent": true,
+    "status": "PASS"
+  },
+  "test_seed_metrics": {
+    "seeds": 10,
+    "status": "PASS"
+  },
+  "counts_match_summary": true,
+  "status": "PASS"
+}

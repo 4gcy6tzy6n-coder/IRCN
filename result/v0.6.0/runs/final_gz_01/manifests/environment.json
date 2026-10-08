@@ -1,0 +1,15 @@
+{
+  "python": "3.12.13 (main, Mar  3 2026, 15:35:03) [Clang 21.1.4 ]",
+  "platform": "macOS-26.2-arm64-arm-64bit",
+  "machine": "arm64",
+  "numpy": "2.4.4",
+  "torch": "2.11.0",
+  "device": "cpu",
+  "threads": {
+    "intraop": 1,
+    "interop": 1
+  },
+  "deterministic_algorithms": true,
+  "mps_available_but_disabled": true,
+  "cuda_available": false
+}

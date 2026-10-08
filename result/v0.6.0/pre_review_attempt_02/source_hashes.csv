@@ -1,0 +1,7 @@
+path,sha256
+model/v0.6.0/MODEL_CONTRACT_v0.1.md,725fe14ad16492ac359acd96745249c79e660401e84bea201fbdc7324d51663a
+model/v0.6.0/pre_registration_v1.yaml,a60702fcf16c7440950b64a9172dd3dd26b3fdb101cad4edf3bbb1aaef2ea96b
+model/v0.6.0/requirements.lock,81580c22f1e5acd9402a0345896526835cc223f099377a66b12356cda0d16950
+model/v0.6.0/run_experiment.py,97d1e55cd817d943aae22f41845a06850a6e46690146cd54c9e2f2a902d74d3b
+model/v0.6.0/src/ircn_v06.py,afd77991fadcaf840d9f353fb794fde7d767ceb8be137dc45b308e8f76259cd2
+result/v0.6.0/tests/test_v06_contract.py,b70c21bbd3da15e33d3a8f98c55f5489aebdd32cda7c057baf2e421245442c20

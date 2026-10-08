@@ -1,0 +1,4 @@
+{
+  "status": "PRELIMINARY_SUPERSEDED",
+  "reason": "These pre-compression runs were independently reproduced byte-for-byte by final_gz_01 and final_gz_02. CSV files were losslessly transformed to deterministic gzip; see compression_migration.json. Retained for audit, not primary evidence."
+}

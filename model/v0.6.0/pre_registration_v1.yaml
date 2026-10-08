@@ -1,0 +1,187 @@
+version: IRCN-v0.6.0-trainable-influence-bridge
+status: frozen_before_model_code
+independent_contract_review: ACCEPT
+contract_review_date: 2026-10-08
+scope:
+  question: Can a shared local recurrent cell learn a synthetic directed propagation task and can a predictor estimate signed single-node finite-horizon update benefit from local decision-time features on held-out trajectory seeds?
+  evidence_level: exploratory mechanism/software study
+  prohibits: [event-runtime policy deployment, efficiency or speedup claims, joint-update budget claims, E2, E3, E4, connectome analysis, NeuroConverge edits, NMI manuscript edits]
+  historical_boundary: v0.3.5 WP2 remains INCONCLUSIVE under its original contract and is not reused as evidence for or against v0.6
+runtime:
+  python: 3.12.13
+  platform: macOS arm64
+  device: cpu
+  mps: disabled
+  cuda: disabled
+  torch: 2.11.0
+  numpy: 2.4.4
+  intraop_threads: 1
+  interop_threads: 1
+  deterministic_algorithms: true
+  requirements_file: model/v0.6.0/requirements.lock
+task:
+  graph:
+    nodes: 32
+    edges: [[0, 1, 0.8], [1, 2, 0.8], [2, 3, 0.8], [3, 4, 0.8], [4, 5, 0.8], [5, 6, 0.8], [6, 7, 0.8]]
+    edge_tuple_order: [source, destination, weight]
+    matrix_convention: "W[destination,source] = weight; aggregate = W@h"
+    isolated_distractors: {start_inclusive: 8, end_inclusive: 31}
+    self_edges: false
+  sequence:
+    ticks: 16
+    trajectories_per_seed: 32
+    generator: "NumPy Generator(PCG64(SeedSequence([top_seed, trajectory_index]))); source_count=rng.integers(1,3); source_ticks=sort(rng.choice(9,size=source_count,replace=False)); source amplitudes in sorted-tick order from rng.uniform(0.25,1.25); distractor_count=rng.integers(0,3); each distractor draws node=rng.integers(8,32), tick=rng.integers(0,16), amplitude=rng.uniform(-1,1); pulse collisions add"
+    draw_order: [source_count, source_ticks, source_amplitudes_sorted_by_tick, distractor_count, distractor_node_tick_amplitude_in_draw_order]
+    seed_mapping: "Each listed top_seed produces trajectory_index 0..31. No cross-split seed reuse."
+  teacher:
+    recurrence: "h_next = 0.5*h + W@h + x"
+    initial_state: zeros
+    output: node_7_state_after_current_tick
+    noise: none
+splits:
+  train: [100, 101, 102, 103, 104, 105, 106, 107, 108, 109]
+  validation: [200, 201, 202, 203, 204]
+  test: [300, 301, 302, 303, 304, 305, 306, 307, 308, 309]
+  unit: top_level_seed_cluster
+model:
+  precision: float64
+  hidden_width: 8
+  input_width: 1
+  cell: "q=concat(h,aggregate,x,log(2)); z=sigmoid(Wz@q+bz); c=tanh(Wc@q+bc); h_next=(1-z)*h+z*c"
+  aggregate: "W@h / sqrt(max(1,in_degree))"
+  message_projection: identity
+  readout: affine_scalar_from_node_7
+  init_seed: 6060
+  readout_init_seed: 6064
+  data_order_seed: 6061
+  optimizer: Adam
+  learning_rate: 0.001
+  betas: [0.9, 0.999]
+  epsilon: 1.0e-8
+  weight_decay: 0.0
+  initialization: {weights: xavier_uniform, biases: zero, generator: cpu}
+  gradient_clipping: none
+  learning_rate_scheduler: none
+  batch_size: 32
+  max_epochs: 200
+  data_order: "ascending (top_seed,trajectory_index,tick); shuffle trajectory indices each epoch with CPU torch.Generator seed 6061; preserve tick order; keep final smaller batch"
+  training_loss: arithmetic_mean_squared_error_over_batch_trajectories_and_16_ticks
+  tick_weights: equal
+  early_stopping: {metric: validation_mean_per_trajectory_mse, min_delta: 1.0e-6, patience: 15, restore_best_checkpoint: true}
+  validation_tie: retain_earlier_epoch_if_loss_difference_at_most_1.0e-12
+  learnability_descriptor: "BEATS_BASELINE iff macro mean per-trajectory test NRMSE is strictly below constant-training-mean baseline, finite for all nonconstant trajectories, and at least one test trajectory is nonconstant; descriptive only"
+features:
+  order: [own_state_0_to_7, aggregate_0_to_7, current_input, input_change_abs, weighted_message_change, prior_residual, elapsed, consecutive_holds, deadline_flag, in_degree, out_degree, distance_to_readout_capped_33, readout_reachable]
+  total_dimension: 27
+  exact_order: [own_state_0, own_state_1, own_state_2, own_state_3, own_state_4, own_state_5, own_state_6, own_state_7, aggregate_0, aggregate_1, aggregate_2, aggregate_3, aggregate_4, aggregate_5, aggregate_6, aggregate_7, current_input, input_change_abs, weighted_message_change, prior_residual, elapsed, consecutive_holds, deadline_flag, in_degree, out_degree, directed_distance_to_readout_capped_33, readout_reachable]
+  graph_matrix_convention: "W[target,source]; directed edge source→target; aggregate=W@h"
+  distance_orientation: "follow directed edges from node i to readout node 7; unreachable distance=33 and reachability=0"
+  t0_previous_input_and_state: zeros
+  current_tick_only: true
+  normalization: train_only_mean_and_std
+  zero_std_replacement: 1.0
+influence:
+  opportunity_rule: "all nodes i=0..31 at ticks t=0..11 for every trajectory"
+  snapshot: "full trained-cell reference state array h[t] with shape (32,8), float64, at the start of decision tick t before either counterfactual action"
+  snapshot_hash: "canonical_array_hash under golden.serialization"
+  intervention: "at tick t, update all nodes except target i is UPDATE in one branch and HOLD in the paired branch; afterward both branches update all nodes"
+  horizon_ticks: 4
+  scored_ticks: [t, t_plus_1, t_plus_2, t_plus_3]
+  loss: squared_error_against_teacher_node_7_output
+  delta_sign: "mean(loss_HOLD-loss_UPDATE); positive means UPDATE improves task loss"
+  branch_aliasing: forbidden
+  label_sampling: all_opportunities
+  train_loss_strata: equal_total_weight_path_nodes_0_to_7_and_isolated_nodes_8_to_31_then_equal_weight_per_top_seed
+estimator:
+  model: one_hidden_layer_mlp
+  width: 16
+  activation: relu
+  output: signed_delta
+  optimizer: Adam
+  learning_rate: 0.001
+  betas: [0.9, 0.999]
+  epsilon: 1.0e-8
+  weight_decay: 0.0
+  initialization: {weights: xavier_uniform, biases: zero, generator: cpu}
+  gradient_clipping: none
+  learning_rate_scheduler: none
+  batch_size: 256
+  max_epochs: 100
+  init_seed: 6062
+  data_order_seed: 6063
+  data_order: "shuffle all training label rows each epoch with CPU torch.Generator seed 6063; batches at most 256"
+  weighted_loss: "sum(weight * squared_error) / sum(weight) within batch; equal total seed weight; within each seed half weight to path and half to isolated nodes; uniform within each stratum"
+  weighted_standardization: "train-only weighted population mean and standard deviation for features and labels; zero standard deviation replaced with 1"
+  early_stopping: {metric: validation_weighted_mse, min_delta: 1.0e-6, patience: 10, restore_best_checkpoint: true}
+  validation_tie: retain_earlier_epoch_if_loss_difference_at_most_1.0e-12
+  label_standardization: train_only_mean_and_std
+  zero_std_replacement: 1.0
+metrics:
+  primary: [signed_delta_mse, spearman_by_trajectory, sign_accuracy_abs_delta_gt_1e-12, precision_top_20pct_predicted_positive]
+  baseline: [zero_delta, input_change_abs, prior_residual, out_degree, distance_to_readout, fixed_seed_random]
+  metric_applicability: {mse: [predictor, zero_delta], spearman: [predictor, all_ranking_baselines], sign_accuracy: [predictor_only], precision_top_20pct: [predictor, all_ranking_baselines]}
+  stratification: [path_nodes_0_to_7, isolated_nodes_8_to_31]
+  summary: per_trajectory_then_per_top_seed
+  confidence_interval: paired_seed_cluster_bootstrap_95pct_descriptive_only
+  ranking_rule: "ceil(0.20*384) opportunities per trajectory, score descending, ties by ascending node then tick; precision is fraction with true Delta>0; Spearman uses average ranks"
+  distance_score: negative_capped_distance
+  random_score: "PCG64(SeedSequence([7070,top_seed,trajectory_index]))"
+  bootstrap: {replicates: 10000, resampling_unit: top_level_test_seed, replacement: true, seed: 8686, interval: percentile_2.5_97.5, contrasts: {mse: predictor_minus_zero_delta, precision_top_20pct: predictor_minus_each_ranking_baseline, spearman: per_method_descriptive_intervals}}
+  oracle_name: single_intervention_label_oracle
+  joint_set_optimum: not_estimated
+  wall_clock_claim: prohibited
+  budget_sweep: out_of_scope
+checks:
+  - deterministic_generator_and_golden_hashes_before_training
+  - hand_computed_teacher_fixture
+  - finite_nonzero_cell_and_readout_gradients
+  - split_seed_disjointness
+  - train_only_preprocessing
+  - counterfactual_branch_isolation
+  - future_target_does_not_change_decision_features
+  - isolated_node_delta_zero
+  - hand_computed_path_delta_fixture
+  - full_feature_collision_adversary
+  - heldout_cell_beats_constant_training_mean_baseline
+  - all_seed_and_failure_retention
+interpretation:
+  software_gate_failure: NOT_READY
+  cell_unlearnable: preserve negative result; do not interpret predictor as model-validity evidence
+  predictor_underperforms_controls: preserve negative result; no influence-aware claim
+  success: exploratory evidence for this synthetic mechanism only; runtime integration and independent real task remain required
+golden:
+  serialization: "For ndarray: C-contiguous little-endian float64; SHA-256 over uint32-le ndim, uint64-le dimensions, ASCII dtype.str plus NUL, then C-order bytes"
+  sentinel: {top_seed: 424242, trajectory_index: 0, role: external_golden_fixture_not_in_any_split}
+  input_shape: [16, 32, 1]
+  input_sha256: 24c7b71a20fd17f6d409f537441216163d870f99a814493443123533d6fc51bf
+  teacher_shape: [17, 32]
+  teacher_sha256: 582b333d1f5024f181c25268d69f693c1fc230a59b6225ce25a63c7ac01c58fe
+  feature_fixture:
+    node: 6
+    state: zeros_width_8
+    previous_state: zeros_width_8
+    aggregate: zeros_width_8
+    current_input: 0
+    previous_input: 0
+    elapsed: 1
+    consecutive_holds: 0
+    deadline_flag: 0
+    in_degree: 1
+    out_degree: 1
+    directed_distance_to_readout: 1
+    readout_reachable: 1
+    vector: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1]
+    sha256: b54a35f50e01997bc1ef44a65f8592f94a553ac233863cfc8fcc491006af0a2a
+  path_label_fixture:
+    expected_delta: 0.016384
+  feature_collision_fixture:
+    model: teacher_linear_recurrence_from_contract
+    initial_state_pair: "width-8 state component 0 has value 1 at node 5 in branch A or node 6 in branch B; components 1..7 and all other node states are zero"
+    previous_state: zeros
+    input_and_future_inputs: zeros
+    decision_tick: 0
+    horizon_ticks: 4
+    scored_output: node_7_state_after_each_tick
+    nodes: [5, 6]
+    expected_signed_deltas: [0.0832, 0.1025]
+    expected_feature_difference_only: directed_distance_to_readout
