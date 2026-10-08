@@ -1,0 +1,5 @@
+scope,tests_passed,tests_failed,status,command
+v0.4.2 metric hardening,18,0,PASS,python -m pytest -q model/v0.4.2/test_metric_hardening.py
+v0.4.1 ICEF regression,23,0,PASS,python -m pytest -q model/v0.4.1/test_icef_metrics.py
+repository regression,47,0,PASS,python -m pytest -q
+published snapshot immutability,1,0,PASS,git diff --exit-code origin/main -- model/v0.4.1/icef_metrics.py model/v0.4.1/test_icef_metrics.py
