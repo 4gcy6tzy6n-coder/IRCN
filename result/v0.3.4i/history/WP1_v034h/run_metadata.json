@@ -1,0 +1,15 @@
+{
+  "contract": "contracts/V03_4H_FAST_LOCAL_TOLERANCE_CALIBRATION.yaml",
+  "contract_sha256": "2b031c90b4ddba6e476e3fcc1a0c05d96f8669def3647942d14f0cdb77286ad7",
+  "python": "3.12.13",
+  "executable": "/Users/yyl/.local/share/uv/python/cpython-3.12-macos-aarch64-none/bin/python3",
+  "platform": "macOS-26.2-arm64-arm-64bit",
+  "machine": "arm64",
+  "scope": "v0.3.4h partial calibration screen; 61/96 rows, stopped at first decisive frozen accuracy failure",
+  "wp1_status": "STOP_CANDIDATE_AFTER_FROZEN_CALIBRATION_ACCURACY_FAILURE",
+  "confirmatory_evaluation": false,
+  "downstream_science_executed": false,
+  "test_suite": "40 passed",
+  "manifest": "source_hashes_v034.csv",
+  "manifest_rows": 288
+}

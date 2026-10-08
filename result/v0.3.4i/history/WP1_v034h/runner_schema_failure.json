@@ -1,0 +1,15 @@
+[
+  {
+    "graph": "chain",
+    "n": 16,
+    "task": "smooth",
+    "seed": 293,
+    "contract_sha256": "2b031c90b4ddba6e476e3fcc1a0c05d96f8669def3647942d14f0cdb77286ad7",
+    "method": "exact_exogenous_ode_segment",
+    "input_sha256": "3be5e7ee93d9ea33c7f02dd871e3a27aac8ba6b7a7daa5d00422bbbe9fc9537e",
+    "driven_count": 1,
+    "nonzero_U_rows": 1,
+    "failure": "KeyError('input_mode')",
+    "traceback": "Traceback (most recent call last):\n  File \"/Users/yyl/Desktop/workshop/NMI/IRCN/experiments/WP1_v034h/calibrate_fast_local.py\", line 67, in <module>\n    input_mode=candidate[\"input_mode\"],\n               ~~~~~~~~~^^^^^^^^^^^^^^\nKeyError: 'input_mode'\n"
+  }
+]

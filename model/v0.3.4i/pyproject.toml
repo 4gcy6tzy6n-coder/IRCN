@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools==81.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ircn"
+version = "0.3.0"
+description = "Correctness-gated recurrent graph solvers and event scheduling experiments"
+requires-python = "==3.12.*"
+dependencies = ["numpy==2.4.4", "scipy==1.17.1", "PyYAML==6.0.3", "matplotlib==3.10.9"]
+
+[project.optional-dependencies]
+test = ["pytest==9.1.1"]
+
+[project.scripts]
+ircn = "ircn.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["ircn", "ircn.*", "dynamics*", "events*", "solvers*"]
+namespaces = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+pythonpath = ["src"]

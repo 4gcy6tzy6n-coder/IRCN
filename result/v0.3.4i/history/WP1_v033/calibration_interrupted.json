@@ -1,0 +1,22 @@
+{
+  "contract": "contracts/V03_3_ODE_SEGMENT_CALIBRATION.yaml",
+  "contract_sha256": "82c0113e5f537265e9d186a549b50c86f17338b193e8b266c14854d25286ce1b",
+  "status": "DECISIVE_ACCURACY_FAIL_PARTIAL_SCAN",
+  "scope_instances": 96,
+  "completed_instances": 33,
+  "runtime_failures": 0,
+  "accuracy_pass_rows": 17,
+  "accuracy_fail_rows": 16,
+  "interrupted_instance": {"graph": "star", "n": 64, "task": "smooth", "seed": 131},
+  "nrmse_limit": 6.837551017609374e-08,
+  "max_observed_nrmse": 0.07486970891661238,
+  "mean_observed_nrmse": 0.006341664354730427,
+  "mean_observed_wall_seconds": 7.142174460812274,
+  "max_observed_wall_seconds": 37.52780804224312,
+  "stop_reason": "The frozen screen requires every instance to pass. Accuracy violations were observed, including N=128 dense_burst NRMSE 0.0126 and N=64 star smooth NRMSE 2.81e-7; further calibration cannot make the candidate eligible.",
+  "termination": "The remaining run was manually stopped to avoid spending substantial compute after decisive screen failure. The interrupt occurred during the listed instance and is not counted as a solver exception.",
+  "confirmatory_seeds_used": false,
+  "downstream_science_executed": false,
+  "raw_rows": "calibration_raw.jsonl",
+  "event_log": "events.jsonl.gz"
+}

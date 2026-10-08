@@ -1,0 +1,24 @@
+{
+  "contract": "contracts/V03_4I_CONFIRMATORY.yaml",
+  "contract_sha256": "98e734a02a020fefa7597283572ca6c3ab3e6c826232ef505f11050464bd37a9",
+  "calibration_contract_sha256": "0587a37039ddeb785d5c14b035ca5415d5fda0634598880172f2df0d06dc8db8",
+  "code_sha256": {
+    "src/events/ode_segment_scheduler.py": "67df7cfb70c734db0dfb6833148cac4545d78fdfaf5a17770deb222fab420a3d",
+    "src/events/inputs.py": "eecd35cd0a78d2f14428a42a451d41e1fb1aed5a78a27f61bcb6de189e0c15ff",
+    "src/dynamics/tasks.py": "bfa5d2b331f97e70541eebc8ba124548794d2cb4f45b3cd609a70970c5a486af",
+    "src/solvers/oracle.py": "9ebea48726cded0ce84b867bfb735c9fbae47aceb321b489c056625fab3d3019",
+    "experiments/WP1_v034i_confirm/run_confirmatory.py": "62d2bd0e6170c2292606e16540b4422eb3e74b38a6d07b19923f58c92ff29e00"
+  },
+  "status": "FULL_CONFIRMATORY_SCOPE_PASSED",
+  "scope_instances": 240,
+  "completed_instances": 240,
+  "runtime_failures": 0,
+  "accuracy_pass_rows": 240,
+  "accuracy_fail_rows": 0,
+  "nrmse_limit": 6.837551017609374e-08,
+  "max_nrmse": 4.2634849884279e-09,
+  "downstream_science_executed": false,
+  "elapsed_seconds": 4601.515429541934,
+  "raw_rows": "confirmatory_raw.jsonl",
+  "event_log": "events.jsonl.gz"
+}
