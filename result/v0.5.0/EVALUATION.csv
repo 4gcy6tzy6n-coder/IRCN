@@ -1,0 +1,4 @@
+scope,command,result,interpretation
+runtime+metric regressions,"python -m pytest -q model/v0.5.0/test_event_runtime.py model/v0.4.1/test_icef_metrics.py model/v0.4.2/test_metric_hardening.py","70 passed in 0.10s",software regression evidence; overlaps repository suite
+repository suite,"python -m pytest -q","47 passed in 19.00s",repository regression evidence; do not sum with targeted count
+patch whitespace,"git diff --check -- model/v0.5.0 result/v0.5.0","passed",no whitespace errors in scoped paths
