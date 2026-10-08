@@ -27,4 +27,4 @@ Known limitations: no efficacy, speedup, ICEF validation, real-task generalizati
 
 Scientific status: software semantics READY; scientific capability evaluation deferred and requires a new reviewed preregistration.
 
-Independent completion-package audit initially returned NOT READY because exact verification logs were missing and the superseded-run status was stale. Both issues are corrected; the independent re-review returned ACCEPT with no remaining blocker or major finding. PR/merge and Feishu revision are not yet completed.
+Independent completion-package audit initially returned NOT READY because exact verification logs were missing and the superseded-run status was stale. Both issues are corrected; the independent re-review returned ACCEPT with no remaining blocker or major finding. GitHub [PR #10](https://github.com/4gcy6tzy6n-coder/IRCN/pull/10) merged into `main` as `f8607a5dd9daa4033afd652467df975986ace02f`. The Feishu IRCN Wiki page was updated and verified at document revision 13.
