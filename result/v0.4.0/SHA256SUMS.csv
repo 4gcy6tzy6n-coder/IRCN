@@ -1,0 +1,7 @@
+path,sha256,bytes
+model/v0.4.0/README.md,7d87e2004eb33b2912366bf375e3df9da79b805e6d24c902d924acb07fa77651,308
+model/v0.4.0/architecture_semantics_v0.1.md,cc50f52cce441497fa253aad36e10ad86879ef1965207c1ff85ecd824c22b3f6,9941
+model/v0.4.0/related_work_matrix.md,a28ca76edaa0abdc9ad68d3a52f795d3e0606becc165fc86e153ebe3e5137b11,5603
+result/v0.4.0/PHASE_I_REPORT.md,61f1f8746e53cb0596536b211ce8c60196d48d5b9de74bd0030db24d49b5c876,4767
+result/v0.4.0/RELATED_WORK_MATRIX.md,a28ca76edaa0abdc9ad68d3a52f795d3e0606becc165fc86e153ebe3e5137b11,5603
+result/v0.4.0/PHASE_I_MANIFEST.json,7ba3ada1055659927591e04f2dc0fe34dba0fce86a64025b145675f290f94f7d,1159
