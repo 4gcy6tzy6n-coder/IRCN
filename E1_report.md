@@ -1,46 +1,52 @@
-# E1 — solver Pareto comparison
+# E1 calibration report
 
-## Status
+**G1 was not opened.** No IRCN threshold met the frozen NRMSE ceiling; evaluation-seed timing was not started.
 
-**G1 was not opened.** The preregistered independent threshold calibration failed its NRMSE eligibility condition for IRCN P on the first graph size, `N=64`. Per the frozen rule, no evaluation-seed timing comparison was started and no efficiency claim is made. B2 also had no qualifying calibration threshold and would have been excluded as an accuracy-ineligible comparator.
+Calibration run: `e1_20261008_112905`. Selected thresholds: `{'P': None, 'B2': None}`.
 
-The calibration run and raw logs are under `reports/e1_20261008_110424/`. `threshold_calibration_all.json` contains every evaluated candidate row. `calibration_event_replay.jsonl.gz` contains a deterministic untimed replay of the lowest pre-registered threshold for both methods and both workloads; its SHA-256 and input hashes are recorded in `calibration_event_replay.json`. That replay is an audit trace, not an E1 benchmark run.
+The corrected run includes an untimed deterministic event replay at `reports/e1_20261008_112905/calibration_event_replay.jsonl.gz`; hashes and row count are in its adjacent JSON manifest. The first attempt is invalidated and preserved under `reports/e1_20261008_110424/`.
 
-## Calibration facts
+| Method | Threshold | N | Workload | NRMSE | Node refinements |
+|---|---:|---:|---|---:|---:|
+| P | 0.01 | 64 | sparse_pulses | 0.45044306 | 78 |
+| P | 0.01 | 64 | smooth_periodic | 0.15528728 | 4144 |
+| P | 0.003 | 64 | sparse_pulses | 0.1929268 | 198 |
+| P | 0.003 | 64 | smooth_periodic | 0.07935227 | 4557 |
+| P | 0.001 | 64 | sparse_pulses | 0.094235385 | 545 |
+| P | 0.001 | 64 | smooth_periodic | 0.03704003 | 5596 |
+| P | 0.0003 | 64 | sparse_pulses | 0.04304284 | 1715 |
+| P | 0.0003 | 64 | smooth_periodic | 0.013895456 | 10261 |
+| P | 0.0001 | 64 | sparse_pulses | 0.01869493 | 5000 |
+| P | 0.0001 | 64 | smooth_periodic | 0.0053846764 | 24623 |
+| P | 3e-05 | 64 | sparse_pulses | 0.0068049326 | 16388 |
+| P | 3e-05 | 64 | smooth_periodic | 0.0016954643 | 75626 |
+| P | 1e-05 | 64 | sparse_pulses | 0.0025033506 | 48948 |
+| P | 1e-05 | 64 | smooth_periodic | 0.00057889043 | 222327 |
+| B2 | 0.01 | 64 | sparse_pulses | 0.40086223 | 22 |
+| B2 | 0.01 | 64 | smooth_periodic | 0.21571999 | 4022 |
+| B2 | 0.003 | 64 | sparse_pulses | 0.91918019 | 51 |
+| B2 | 0.003 | 64 | smooth_periodic | 0.10871869 | 4203 |
+| B2 | 0.001 | 64 | sparse_pulses | 0.9512937 | 75 |
+| B2 | 0.001 | 64 | smooth_periodic | 0.05301934 | 4803 |
+| B2 | 0.0003 | 64 | sparse_pulses | 0.94910738 | 165 |
+| B2 | 0.0003 | 64 | smooth_periodic | 0.02420805 | 6757 |
+| B2 | 0.0001 | 64 | sparse_pulses | 0.73571875 | 342 |
+| B2 | 0.0001 | 64 | smooth_periodic | 0.010676811 | 11723 |
+| B2 | 3e-05 | 64 | sparse_pulses | 0.66584103 | 752 |
+| B2 | 3e-05 | 64 | smooth_periodic | 0.0043828832 | 20898 |
+| B2 | 1e-05 | 64 | sparse_pulses | 0.36070976 | 1688 |
+| B2 | 1e-05 | 64 | smooth_periodic | 0.0028982355 | 37290 |
 
-Frozen NRMSE ceiling: `0.001`. The calibration scan is stopped early for a candidate once it fails at N=64, because a threshold failing one required workload cannot satisfy the frozen rule for all workloads and graph sizes.
-
-| Method | Threshold | Pulse NRMSE (N=64) | Smooth NRMSE (N=64) | Calibration eligibility |
-|---|---:|---:|---:|---|
-| P | 0.01 | 0.151663 | 0.036825 | Fail |
-| P | 0.003 | 0.144940 | 0.020015 | Fail |
-| P | 0.001 | 0.159477 | 0.007704 | Fail |
-| P | 0.0003 | 0.160646 | 0.006098 | Fail |
-| P | 0.0001 | 0.156302 | 0.002452 | Fail |
-| P | 0.00003 | 0.130473 | 0.000921 | Fail |
-| P | 0.00001 | 0.127955 | 0.000373 | Fail |
-| B2 | 0.01 | 0.665239 | 1.000000 | Fail |
-| B2 | 0.003 | 0.665311 | 1.000000 | Fail |
-| B2 | 0.001 | 0.665096 | 1.000000 | Fail |
-| B2 | 0.0003 | 0.665076 | 1.000000 | Fail |
-| B2 | 0.0001 | 0.464813 | 1.000000 | Fail |
-| B2 | 0.00003 | 0.464607 | 1.000000 | Fail |
-| B2 | 0.00001 | 0.464360 | 1.000000 | Fail |
-
-All figures above are from the single frozen calibration seed `8675309`; they are gate-calibration observations, not independent statistical evidence. The ten evaluation seeds were not opened. B0/B1/B3 and P/B2 were not timed for E1.
+These are calibration-seed eligibility observations, not independent inferential evidence. `E1_results.csv` remains header-only. No wall-clock or efficiency conclusion is available.
 
 ## Interpretation
 
-The current event implementations do not meet the preregistered trajectory-accuracy requirement on the pulse-driven N=64 calibration case. Tightening P's threshold improved smooth-input accuracy but did not bring the pulse workload close to the NRMSE ceiling. This is evidence against this frozen implementation/configuration, not evidence that all local event solvers are impossible. The results do not identify whether the main cause is pulse-boundary handling, asynchronous coupling error, the local predictor, or another implementation limitation; no post-result parameter change was made.
+The corrected local event implementation failed calibration eligibility. This does not establish that all event-driven solvers fail; it blocks this configuration from G1 and E2.
 
-Because no candidate P threshold qualified, there is no valid same-accuracy runtime comparison. The `E1_results.csv` file is intentionally header-only; it does not contain fabricated timing rows.
+## Protocol deviation
 
-## Decision
-
-**STOP** the current acceleration/connectome-extension line under the frozen decision rule. Do not proceed to E2. No profiling-based implementation repair was justified by these calibration outputs, so the single allowed repair was not used.
+The smooth-input event cadence is hardcoded at 10 ms. The preregistration sets a 10 ms output interval but does not explicitly freeze this cadence for continuous input. As documented in [protocol_deviations.md](/Users/yyl/Desktop/workshop/NMI/IRCN/protocol_deviations.md), this scan is an implementation-level calibration probe rather than fully confirmatory preregistered evidence. No latency conclusion is available either way.
 
 ## Unresolved
 
-- E1 real wall-clock, latency distributions, memory comparisons, and Pareto results remain unmeasured.
-- This test used synthetic graphs only; biological topology and AI transfer were not tested.
-- The source-level legacy AI repository audit remains incomplete because the referenced checkout was not available locally or through the restricted network. See `legacy_reuse_audit.md`.
+The per-method RSS field uses process-lifetime `ru_maxrss` and is not attributable to a single method in a shared process. B1/B3 dense versus CSR kernel choice also needs to be frozen before any timed comparison. Since G1 was not opened, no memory or efficiency comparison is reported. The legacy source-level audit remains incomplete.

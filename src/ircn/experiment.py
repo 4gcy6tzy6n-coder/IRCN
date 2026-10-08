@@ -48,7 +48,15 @@ def input_hash(circuit) -> str:
     for array in (circuit.w, circuit.tau, circuit.gain, circuit.workload.driven, circuit.workload.phases):
         digest.update(str(array.dtype).encode())
         digest.update(array.tobytes(order="C"))
-    digest.update(json.dumps({"seed": circuit.seed, "kind": circuit.workload.kind, "pulse_times": circuit.workload.pulse_times}, sort_keys=True).encode())
+    digest.update(json.dumps({
+        "seed": circuit.seed,
+        "kind": circuit.workload.kind,
+        "pulse_times": circuit.workload.pulse_times,
+        "pulse_width": circuit.workload.pulse_width,
+        "pulse_amplitude": circuit.workload.pulse_amplitude,
+        "smooth_frequency": circuit.workload.smooth_frequency,
+        "smooth_amplitude": circuit.workload.smooth_amplitude,
+    }, sort_keys=True).encode())
     return digest.hexdigest()
 
 
@@ -83,9 +91,10 @@ def run_e0(run_dir: Path | None = None) -> bool:
     (run_dir / "pytest.stdout.log").write_text(process.stdout, encoding="utf-8")
     (run_dir / "pytest.stderr.log").write_text(process.stderr, encoding="utf-8")
     passed = process.returncode == 0
-    report = """# E0 correctness report\n\n""" + f"Status: **{'PASS' if passed else 'FAIL'}**\n\n" + "E0 executes the frozen T0–T6 automation suite. A failure blocks E1.\n\n```text\n" + (process.stdout[-6000:] or process.stderr[-6000:]) + "\n```\n"
+    status = {"status": "PASS" if passed else "FAIL", "returncode": process.returncode, "source_sha256": source_hashes(), "config_sha256": sha256_file(CONFIG), "pre_registration_sha256": sha256_file(ROOT / "pre_registration_v1.yaml")}
+    report = """# E0 correctness report\n\n""" + f"Status: **{'PASS' if passed else 'FAIL'}**\n\n" + f"Run: `{run_dir.name}`.\n\n" + "E0 executes the T0–T6 automation suite. A failure blocks E1. E1 also verifies that this report's source and frozen-config hashes match the current tree.\n\n```text\n" + (process.stdout[-6000:] or process.stderr[-6000:]) + "\n```\n"
     E0_REPORT.write_text(report, encoding="utf-8")
-    (run_dir / "status.json").write_text(json.dumps({"status": "PASS" if passed else "FAIL", "returncode": process.returncode}, indent=2), encoding="utf-8")
+    (run_dir / "status.json").write_text(json.dumps(status, indent=2, sort_keys=True), encoding="utf-8")
     return passed
 
 
@@ -97,10 +106,10 @@ def _call(method: str, circuit, threshold: float):
         values, counts = integrate_adaptive(circuit)
         return values, {"rhs_evaluations": counts.get("rhs_evaluations", 0), "queue_operations": 0, "node_refinements": 0, "fallbacks": 0}, []
     if method == "B2":
-        values, counts, events = integrate_events(circuit, threshold=threshold, mode="input_event", log_events=True)
+        values, counts, events = integrate_events(circuit, threshold=threshold, mode="input_event", log_events=False)
         return values, counts, events
     if method == "P":
-        values, counts, events = integrate_events(circuit, threshold=threshold, mode="ircn", log_events=True)
+        values, counts, events = integrate_events(circuit, threshold=threshold, mode="ircn", log_events=False)
         return values, counts, events
     raise ValueError(method)
 
@@ -144,6 +153,14 @@ def run_e1() -> bool:
     e0 = E0_REPORT
     if not e0.exists() or "Status: **PASS**" not in e0.read_text(encoding="utf-8"):
         raise RuntimeError("E1 blocked: a passing reports/E0_report.md is required")
+    report_text = e0.read_text(encoding="utf-8")
+    run_name = next((line.split("`", 2)[1] for line in report_text.splitlines() if line.startswith("Run: `") and line.endswith("`.")), None)
+    status_path = REPORTS / str(run_name) / "status.json" if run_name else None
+    if status_path is None or not status_path.exists():
+        raise RuntimeError("E1 blocked: E0 run manifest is missing; run a fresh E0")
+    e0_status = json.loads(status_path.read_text(encoding="utf-8"))
+    if e0_status.get("status") != "PASS" or e0_status.get("source_sha256") != source_hashes() or e0_status.get("config_sha256") != sha256_file(CONFIG) or e0_status.get("pre_registration_sha256") != sha256_file(ROOT / "pre_registration_v1.yaml"):
+        raise RuntimeError("E1 blocked: E0 PASS is stale for the current source/configuration; run a fresh E0")
     run_dir = REPORTS / f"e1_{time.strftime('%Y%m%d_%H%M%S')}"
     run_dir.mkdir(parents=True, exist_ok=False)
     config = yaml.safe_load(CONFIG.read_text(encoding="utf-8"))
@@ -155,9 +172,48 @@ def run_e1() -> bool:
     threshold = thresholds.get("P")
     if threshold is None:
         (run_dir / "status.json").write_text(json.dumps({"status": "G1_NOT_RUN", "reason": "no frozen calibration threshold met the accuracy limit"}, indent=2), encoding="utf-8")
-        E1_REPORT.write_text("# E1 report\n\nE1 evaluation was not run: no pre-registered IRCN threshold met the calibration accuracy limit. This is a negative feasibility result, not a performance comparison.\n", encoding="utf-8")
+        calibration = json.loads((run_dir / "threshold_calibration_all.json").read_text(encoding="utf-8"))
+        lines = [
+            "# E1 calibration report",
+            "",
+            "**G1 was not opened.** No IRCN threshold met the frozen NRMSE ceiling; evaluation-seed timing was not started.",
+            "",
+            f"Calibration run: `{run_dir.name}`. Selected thresholds: `{thresholds}`.",
+            "",
+            "| Method | Threshold | N | Workload | NRMSE | Node refinements |",
+            "|---|---:|---:|---|---:|---:|",
+        ]
+        lines.extend(f"| {row['method']} | {row['threshold']} | {row['n']} | {row['workload']} | {row['nrmse']:.8g} | {row['node_refinements']} |" for row in calibration)
+        lines.extend([
+            "",
+            "These are calibration-seed eligibility observations, not independent inferential evidence. `E1_results.csv` remains header-only. No wall-clock or efficiency conclusion is available.",
+            "",
+            "## Interpretation",
+            "",
+            "The corrected local event implementation failed the frozen trajectory-quality gate on calibration. This does not establish that all event-driven solvers fail; it blocks this frozen configuration from G1 and E2.",
+            "",
+            "## Unresolved",
+            "",
+            "The per-method RSS field uses process-lifetime `ru_maxrss` and is not attributable to a single method in a shared process. Since G1 was not opened, no memory comparison is reported. The legacy source-level audit remains incomplete.",
+        ])
+        E1_REPORT.write_text("\n".join(lines) + "\n", encoding="utf-8")
         _ensure_empty_results_csv()
-        _write_decision("STOP", "No IRCN candidate threshold met the frozen NRMSE calibration limit; E1 was not opened and E2 is not recommended on this line.")
+        DECISION_REPORT.write_text(
+            "# IRCN decision v1\n\n"
+            "**Decision: STOP** — do not enter E2 on the current evidence.\n\n"
+            "## Facts\n\n"
+            f"- Corrected-source E0 T0–T6 passed for run `{run_name}`.\n"
+            f"- Calibration run `{run_dir.name}` found no IRCN threshold at or below the frozen NRMSE limit across required workloads and graph sizes.\n"
+            "- Evaluation seeds, E1 timing, G1 statistics, and E2/E3/E4 were not run. `E1_results.csv` is header-only.\n"
+            "- An earlier calibration attempt was invalidated after code review found a broken segmented oracle and event queue semantics; its raw artifacts are retained and marked in the audit record.\n\n"
+            "## Interpretation\n\n"
+            "The corrected implementation still fails calibration eligibility, so no efficiency claim is supportable. This rejects continuing this frozen acceleration route; it does not reject all event-driven solvers.\n\n"
+            "## Unresolved\n\n"
+            "The specific sources of remaining trajectory error are not isolated. Per-method RSS is not attributable with the current shared-process high-water measurement. The legacy source-level audit remains incomplete.\n\n"
+            "## E2 recommendation\n\n"
+            "Not worth proceeding to E2 on this evidence. A future attempt requires numerical diagnosis and a new preregistration; do not carry these failed runs forward as validation.\n",
+            encoding="utf-8",
+        )
         return False
     (REPORTS / "calibrated_threshold.json").write_text(json.dumps({"thresholds": thresholds, "calibration_run": run_dir.name}, indent=2), encoding="utf-8")
     seed_list = config["system"]["seeds"]["evaluation"]
@@ -171,6 +227,8 @@ def run_e1() -> bool:
                 circuit = make_circuit(n, int(seed), workload)
                 reference = integrate_reference(circuit)
                 for method in methods:
+                    method_circuit = make_circuit(n, int(seed), workload, dense=True) if method == "B0" else circuit
+                    method_reference = integrate_reference(method_circuit) if method == "B0" else reference
                     method_threshold = thresholds.get(method, threshold)
                     if method in {"B2", "P"} and method_threshold is None:
                         failure = {"n": n, "workload": workload, "seed": seed, "method": method, "reason": "no calibration threshold met NRMSE limit; method not evaluated"}
@@ -179,13 +237,15 @@ def run_e1() -> bool:
                         continue
                     for repetition in range(-3, 10):
                         try:
-                            (result, counts, events), elapsed, rss = timed_call(lambda: _call(method, circuit, float(method_threshold or threshold)))
+                            (result, counts, events), elapsed, rss = timed_call(lambda: _call(method, method_circuit, float(method_threshold or threshold)))
                             if repetition >= 0:
-                                err = nrmse(result, reference)
-                                row = {"n": n, "workload": workload, "seed": seed, "input_sha256": input_hash(circuit), "method": method, "repetition": repetition, "warmup": False, "wall_seconds": elapsed, "process_highwater_rss_bytes": _rss_bytes(rss), "nrmse": err, "max_abs_error": float(np.max(np.abs(result - reference))), **counts}
+                                err = nrmse(result, method_reference)
+                                row = {"n": n, "workload": workload, "seed": seed, "input_sha256": input_hash(method_circuit), "method": method, "repetition": repetition, "warmup": False, "wall_seconds": elapsed, "process_highwater_rss_bytes": _rss_bytes(rss), "nrmse": err, "max_abs_error": float(np.max(np.abs(result - method_reference))), **counts}
                                 rows.append(row)
-                            if method in {"B2", "P"}:
-                                _append_jsonl(event_path, [{"n": n, "workload": workload, "seed": seed, "method": method, "repetition": repetition, **event} for event in events])
+                                if repetition == 0 and method in {"B2", "P"}:
+                                    mode = "input_event" if method == "B2" else "ircn"
+                                    _trace, _trace_counts, trace_events = integrate_events(method_circuit, threshold=float(method_threshold or threshold), mode=mode, log_events=True)
+                                    _append_jsonl(event_path, [{"n": n, "workload": workload, "seed": seed, "method": method, "repetition": "untimed_replay_0", **event} for event in trace_events])
                         except BaseException as exc:
                             record = {"n": n, "workload": workload, "seed": seed, "method": method, "repetition": repetition, "exception": repr(exc), "traceback": traceback.format_exc()}
                             failures.append(record)

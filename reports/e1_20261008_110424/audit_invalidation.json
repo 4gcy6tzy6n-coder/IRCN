@@ -1,0 +1,18 @@
+{
+  "action": "Preserved all original logs, fixed the implementation and tests, reran E0, and repeated the frozen calibration scan. The corrected run is reported separately in E1_report.md and decision_v1.md.",
+  "confirmed_findings": [
+    "Segmented DOP853 reference and adaptive integration failed to advance state through intervals without report samples and used the last sampled state as the segment endpoint state.",
+    "A shared per-node token invalidated earlier queued input and neighbor events when any later event was pushed.",
+    "Local updates read current global neighbor states when integrating the target's preceding interval, rather than consuming only published local messages.",
+    "Untriggered output snapshots copied stale cached node values instead of predicting their trajectories.",
+    "B0 ran the sparse graph and duplicated B3 instead of using a dense graph.",
+    "B2 shared the proposed local-drift scheduling path and therefore did not implement the frozen input-event baseline.",
+    "The original T0-T6 suite did not exercise pulse segment advancement, input-event survival, long-horizon stability, or fallback numerical accuracy."
+  ],
+  "corrected_calibration_run": "e1_20261008_112905",
+  "corrected_e0_run": "e0_20261008_112849",
+  "corrected_trace_replay_run": "e1_20261008_112905",
+  "original_calibration_run": "e1_20261008_110424",
+  "reason": "Post-run code review found correctness defects in the oracle and event scheduler.",
+  "status": "INVALIDATED_DO_NOT_USE_FOR_SCIENTIFIC_DECISION"
+}

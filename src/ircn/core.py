@@ -119,13 +119,21 @@ def integrate_reference(circuit: Circuit, *, rtol: float = 1e-12, atol: float = 
     out[0] = h
     breaks = circuit.workload.breakpoints(float(times[-1]))
     for left, right in zip(breaks[:-1], breaks[1:]):
-        ix = np.flatnonzero((times > left + 1e-14) & (times <= right + 1e-14))
-        if ix.size == 0:
-            continue
-        sol = solve_ivp(circuit.rhs, (left, right), h, method="DOP853", t_eval=times[ix], rtol=rtol, atol=atol)
+        ix = np.flatnonzero((times > left) & (times <= right))
+        eval_times = times[ix]
+        if eval_times.size == 0 or eval_times[-1] != right:
+            eval_times = np.append(eval_times, right)
+
+        def segment_rhs(t: float, y: FloatArray) -> FloatArray:
+            # The segment ending at a pulse edge uses the left limit there.
+            eval_t = np.nextafter(right, left) if circuit.workload.kind == "sparse_pulses" and t >= right else t
+            return circuit.rhs(eval_t, y)
+
+        sol = solve_ivp(segment_rhs, (left, right), h, method="DOP853", t_eval=eval_times, rtol=rtol, atol=atol)
         if not sol.success:
             raise RuntimeError(f"oracle failed: {sol.message}")
-        out[ix] = sol.y.T
+        if ix.size:
+            out[ix] = sol.y[:, :ix.size].T
         h = sol.y[:, -1]
     return out
 
@@ -138,14 +146,21 @@ def integrate_adaptive(circuit: Circuit, *, rtol: float = 1e-7, atol: float = 1e
     nfev = 0
     breaks = circuit.workload.breakpoints(float(times[-1]))
     for left, right in zip(breaks[:-1], breaks[1:]):
-        ix = np.flatnonzero((times > left + 1e-14) & (times <= right + 1e-14))
-        if ix.size == 0:
-            continue
-        sol = solve_ivp(circuit.rhs, (left, right), h, method="DOP853", t_eval=times[ix], rtol=rtol, atol=atol)
+        ix = np.flatnonzero((times > left) & (times <= right))
+        eval_times = times[ix]
+        if eval_times.size == 0 or eval_times[-1] != right:
+            eval_times = np.append(eval_times, right)
+
+        def segment_rhs(t: float, y: FloatArray) -> FloatArray:
+            eval_t = np.nextafter(right, left) if circuit.workload.kind == "sparse_pulses" and t >= right else t
+            return circuit.rhs(eval_t, y)
+
+        sol = solve_ivp(segment_rhs, (left, right), h, method="DOP853", t_eval=eval_times, rtol=rtol, atol=atol)
         nfev += sol.nfev
         if not sol.success:
             raise RuntimeError(f"adaptive baseline failed: {sol.message}")
-        out[ix] = sol.y.T
+        if ix.size:
+            out[ix] = sol.y[:, :ix.size].T
         h = sol.y[:, -1]
     return out, {"rhs_evaluations": nfev}
 
@@ -168,21 +183,37 @@ def integrate_rk4(circuit: Circuit, *, step: float = 0.005) -> tuple[FloatArray,
                 k1 = circuit.rhs(t, h)
                 k2 = circuit.rhs(t + dt / 2, h + dt * k1 / 2)
                 k3 = circuit.rhs(t + dt / 2, h + dt * k2 / 2)
-                k4 = circuit.rhs(t + dt, h + dt * k3)
+                end_t = t + dt
+                if circuit.workload.kind == "sparse_pulses" and any(abs(end_t - edge) <= 1e-14 for edge in circuit.workload.breakpoints(float(times[-1]))):
+                    end_t = np.nextafter(end_t, t)
+                k4 = circuit.rhs(end_t, h + dt * k3)
                 h = h + (dt / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
                 nfev += 4
         out[k] = h
     return out, {"rhs_evaluations": nfev}
 
 
-def _local_rk4(circuit: Circuit, node: int, start: float, end: float, h0: float, state: FloatArray, sources: NDArray[np.int64], weights: FloatArray, max_step: float) -> tuple[float, int]:
+def _local_rk4(circuit: Circuit, node: int, start: float, end: float, h0: float, drive: float, max_step: float) -> tuple[float, int]:
     if end <= start:
         return h0, 0
+    driven_ix = int(np.searchsorted(circuit.workload.driven, node))
+    is_driven = driven_ix < circuit.workload.driven.size and int(circuit.workload.driven[driven_ix]) == node
+    if circuit.workload.kind == "sparse_pulses" or not is_driven:
+        value = float(h0)
+        if circuit.workload.kind == "sparse_pulses":
+            cuts = [start, *(edge for edge in circuit.workload.breakpoints(end) if start < edge < end), end]
+            for left, right in zip(cuts[:-1], cuts[1:]):
+                x = circuit.workload.node_value((left + right) / 2, node)
+                equilibrium = math.tanh(drive + circuit.gain[node] * x)
+                value = equilibrium + (value - equilibrium) * math.exp(-(right - left) / circuit.tau[node])
+        else:
+            equilibrium = math.tanh(drive)
+            value = equilibrium + (value - equilibrium) * math.exp(-(end - start) / circuit.tau[node])
+        return value, 0
     count = max(1, int(math.ceil((end - start) / max_step)))
     dt = (end - start) / count
     y = float(h0)
-    # Neighbor states are held between their own events; only this node is refined.
-    drive = float(weights @ state[sources]) if sources.size else 0.0
+    # Neighbor input is held between its local events; only this node is refined.
     for index in range(count):
         t = start + index * dt
         def f(tt: float, yy: float) -> float:
@@ -196,52 +227,52 @@ def _local_rk4(circuit: Circuit, node: int, start: float, end: float, h0: float,
     return y, 4 * count
 
 
-def integrate_events(circuit: Circuit, *, threshold: float, mode: str, max_step: float = 0.005, log_events: bool = False) -> tuple[FloatArray, dict[str, int], list[dict[str, float | int | str]]]:
+def integrate_events(circuit: Circuit, *, threshold: float, mode: str, max_step: float = 0.005, horizon: float = 10.0, log_events: bool = False) -> tuple[FloatArray, dict[str, int], list[dict[str, float | int | str]]]:
     """Local lazy scheduler. It never forms the all-node RHS as a trigger prefilter."""
     if mode not in {"ircn", "input_event"}:
         raise ValueError(f"unknown event mode {mode}")
     n = circuit.n
-    times = report_times()
+    times = report_times(horizon)
     state = np.zeros(n, dtype=np.float64)
     last = np.zeros(n, dtype=np.float64)
+    held_drive = np.zeros(n, dtype=np.float64)
     pending_input = np.zeros(n, dtype=np.float64)
-    next_token = np.zeros(n, dtype=np.int64)
+    self_token = np.zeros(n, dtype=np.int64)
+    event_sequence = 0
     heap: list[tuple[float, int, int, str]] = []
     events: list[dict[str, float | int | str]] = []
-    # Build incoming event adjacency once; propagation touches only actual outgoing neighbors.
+    # Build sparse outgoing adjacency once; propagation touches only actual neighbors.
     outgoing = [np.flatnonzero(circuit.w[:, node]).astype(int) for node in range(n)]
     edge_weight = [circuit.w[outgoing[node], node] for node in range(n)]
-    incoming = [np.flatnonzero(circuit.w[node]).astype(int) for node in range(n)]
-    incoming_weight = [circuit.w[node, incoming[node]] for node in range(n)]
     rhs_evals = queue_ops = updates = 0
     fallbacks = 0
     snapshots = np.empty((times.size, n), dtype=np.float64)
     snapshots[0] = state
 
     def push(t: float, node: int, kind: str) -> None:
-        nonlocal queue_ops
-        next_token[node] += 1
-        heapq.heappush(heap, (float(t), int(node), int(next_token[node]), kind))
+        nonlocal queue_ops, event_sequence
+        event_sequence += 1
+        if kind == "self":
+            self_token[node] = event_sequence
+        heapq.heappush(heap, (float(t), int(node), int(event_sequence), kind))
         queue_ops += 1
 
-    # A conservative, state-only initial drift schedule; no network-wide RHS scan.
-    for node in range(n):
-        push(min(max_step, threshold * circuit.tau[node]), node, "self")
     # External forcing is delivered only to the small driven subset.
     if circuit.workload.kind == "sparse_pulses":
         for k, node in enumerate(circuit.workload.driven):
             for start in circuit.workload.pulse_times[k]:
                 push(start, int(node), "input")
-                push(min(10.0, start + circuit.workload.pulse_width), int(node), "input")
+                push(min(horizon, start + circuit.workload.pulse_width), int(node), "input")
     else:
         source_dt = 0.01
         for node in circuit.workload.driven:
-            for t in np.arange(source_dt, 10.0 + 1e-12, source_dt):
+            for t in np.arange(source_dt, horizon + 1e-12, source_dt):
                 push(float(t), int(node), "input")
 
     sample_index = 1
     for sample_t in times[1:]:
-        heapq.heappush(heap, (float(sample_t), -1, int(sample_index), "sample"))
+        # Sample after all local events at the same timestamp.
+        heapq.heappush(heap, (float(sample_t), n, int(sample_index), "sample"))
         queue_ops += 1
         sample_index += 1
     sample_index = 1
@@ -249,27 +280,45 @@ def integrate_events(circuit: Circuit, *, threshold: float, mode: str, max_step:
         t, node, token, kind = heapq.heappop(heap)
         queue_ops += 1
         if kind == "sample":
-            snapshots[sample_index] = state
+            for output_node in range(n):
+                snapshots[sample_index, output_node], used = _local_rk4(
+                    circuit, output_node, float(last[output_node]), float(t), float(state[output_node]), float(held_drive[output_node]), max_step
+                )
+                rhs_evals += used
             sample_index += 1
             continue
-        if token != next_token[node] or t > 10.0 + 1e-12:
+        if (kind == "self" and token != self_token[node]) or t > horizon + 1e-12:
             continue
-        # Materialize only this node's state from its own last event.
-        local_drive_at_start = float(incoming_weight[node] @ state[incoming[node]]) if incoming[node].size else 0.0
-        local_f_at_start = abs((-state[node] + math.tanh(local_drive_at_start + circuit.gain[node] * circuit.workload.node_value(last[node], node))) / circuit.tau[node])
-        predicted_error = local_f_at_start * max(0.0, t - last[node])
-        refine = needs_refinement(predicted_error, threshold)
+        # Materialize only this node under the recurrent drive held since its last event.
+        predicted_error = 0.0
+        if mode == "ircn":
+            local_f_at_start = abs((-state[node] + math.tanh(held_drive[node] + circuit.gain[node] * circuit.workload.node_value(last[node], node))) / circuit.tau[node])
+            predicted_error = local_f_at_start * max(0.0, t - last[node])
+        refine = mode == "ircn" and needs_refinement(predicted_error, threshold)
         if refine:
             fallbacks += 1
-        new_value, used = _local_rk4(circuit, node, last[node], t, state[node], state, incoming[node], incoming_weight[node], max_step / 2 if refine else max_step)
+        pending_before = float(pending_input[node])
+        held_drive_before = float(held_drive[node])
+        new_value, used = _local_rk4(circuit, node, last[node], t, state[node], held_drive[node], max_step / 2 if refine else max_step)
         rhs_evals += used
         delta = new_value - state[node]
         state[node] = new_value
         last[node] = t
+        held_drive[node] += pending_input[node]
         pending_input[node] = 0.0
         updates += 1
         if log_events:
-            events.append({"time": t, "node": node, "kind": kind, "delta": float(delta), "pending": float(pending_input[node])})
+            events.append({
+                "time": t,
+                "node": node,
+                "kind": kind,
+                "delta": float(delta),
+                "pending": pending_before,
+                "held_drive_before": held_drive_before,
+                "held_drive_after": float(held_drive[node]),
+                "fallback_refinement": int(refine),
+                "rhs_evaluations": int(used),
+            })
         if kind == "input":
             # Input arrivals must update their source even if the recurrent delta is tiny.
             pass
@@ -280,20 +329,21 @@ def integrate_events(circuit: Circuit, *, threshold: float, mode: str, max_step:
             trigger_value = abs(pending_input[target])
             if mode == "ircn":
                 # Local drift estimate from the single target's local state and cached input.
-                local_drive = float(incoming_weight[target] @ state[incoming[target]]) if incoming[target].size else 0.0
+                local_drive = held_drive[target] + pending_input[target]
                 local_f = abs((-state[target] + math.tanh(local_drive + circuit.gain[target] * circuit.workload.node_value(t, target))) / circuit.tau[target])
                 rhs_evals += 1
                 trigger_value += local_f * max(0.0, t - last[target])
             if trigger_value >= threshold:
-                pending_input[target] = 0.0
                 push(t, int(target), "neighbor")
-        # Schedule this node's next local drift event; bounded by max_step.
-        local_drive = float(incoming_weight[node] @ state[incoming[node]]) if incoming[node].size else 0.0
-        f = (-state[node] + math.tanh(local_drive + circuit.gain[node] * circuit.workload.node_value(t, node))) / circuit.tau[node]
-        rhs_evals += 1
-        delay = min(max_step, threshold / max(abs(f), 1e-12))
-        if t + delay <= 10.0 + 1e-12:
-            push(t + delay, node, "self")
+        # Schedule only when estimated local drift reaches tolerance. Inactive nodes
+        # remain analytically predictable instead of receiving periodic fake events.
+        if mode == "ircn":
+            local_drive = held_drive[node]
+            f = (-state[node] + math.tanh(local_drive + circuit.gain[node] * circuit.workload.node_value(t, node))) / circuit.tau[node]
+            rhs_evals += 1
+            delay = threshold / max(abs(f), 1e-12)
+            if t + delay <= horizon + 1e-12:
+                push(t + delay, node, "self")
     if sample_index < times.size:
         snapshots[sample_index:] = state
     return snapshots, {"rhs_evaluations": rhs_evals, "queue_operations": queue_ops, "node_refinements": updates, "fallbacks": fallbacks}, events

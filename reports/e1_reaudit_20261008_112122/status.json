@@ -1,0 +1,8 @@
+{
+  "status": "G1_NOT_RUN",
+  "reason": "no frozen P threshold qualified",
+  "selected_thresholds": {
+    "P": null,
+    "B2": null
+  }
+}

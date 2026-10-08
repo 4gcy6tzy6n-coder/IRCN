@@ -2,10 +2,12 @@
 
 Status: **PASS**
 
-E0 executes the frozen T0–T6 automation suite. A failure blocks E1.
+Run: `e0_20261008_112849`.
+
+E0 executes the T0–T6 automation suite. A failure blocks E1. E1 also verifies that this report's source and frozen-config hashes match the current tree.
 
 ```text
-........                                                                 [100%]
-8 passed in 6.35s
+.............                                                            [100%]
+13 passed in 7.25s
 
 ```

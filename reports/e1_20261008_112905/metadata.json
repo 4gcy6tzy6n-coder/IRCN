@@ -1,0 +1,31 @@
+{
+  "config_sha256": "42131014b9ac5e3a5db494911762cfca5aa5ba0c3dd9841b6939024611da84d0",
+  "e0_report_sha256": "3120208f881fd11c076beafaa153db31750bdc021ab85405fcfdd9ddf83997bd",
+  "environment": {
+    "machine": "arm64",
+    "numpy": "2.4.4",
+    "platform": "macOS-26.2-arm64-arm-64bit",
+    "processor": "arm",
+    "python": "3.12.13 (main, Mar  3 2026, 15:35:03) [Clang 21.1.4 ]",
+    "scipy": "1.17.1",
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1"
+    }
+  },
+  "git_head": "251fa9f1a04b0139830aea3a16a55fba67cac5bc",
+  "pre_registration_sha256": "42131014b9ac5e3a5db494911762cfca5aa5ba0c3dd9841b6939024611da84d0",
+  "source_sha256": {
+    "pyproject.toml": "2c7e341ea12e8aee51e0f5a43db97836ce964ee086aac13c47c5d41296594881",
+    "requirements-lock.txt": "8163914de4e0283b6cb690aa792e9df23efc4a133627b913895541b9c20b827e",
+    "src/ircn/__init__.py": "b8f4f02a6269cc659e0bb80d7ac07fa2a501b801bf049860063ed664a0fd5a7a",
+    "src/ircn/__main__.py": "3129adff95e0f38b87ab34cddfc27082c7892bcaec267ff5d40f160fdf55b44a",
+    "src/ircn/cli.py": "4cd92d5252036a97583621335b930468c7bd7b89ed4c844c1d3936a28a01cd1e",
+    "src/ircn/core.py": "15bcaa67a802e8ac8280fc8e4ee64ef90035012bacd792101d46cd76e89835c9",
+    "src/ircn/experiment.py": "15cbdd05bb344e692029fd0db97b8bd5c024514c90dd79f8097de2033d6f68fe",
+    "src/ircn/stats.py": "0d4ea1d4a0dce15852643004ecf899e2bf72a458740d77b5b91dc063dd857062",
+    "tests/test_gates.py": "6d710156094a6e5b7b09d1deb4a18dd879ce8717f6a40d5d69ad50e51841103c",
+    "tests/test_stats.py": "5b93eaba79b1aecd8c807f3753f64d1db78ca85688832d0125d2939bf8fa12f5"
+  }
+}

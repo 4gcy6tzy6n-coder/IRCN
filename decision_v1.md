@@ -1,23 +1,23 @@
 # IRCN decision v1
 
-**Decision: STOP** — stop the current acceleration/connectome-extension line. Do not proceed to E2 in this round.
+**Decision: STOP** — do not enter E2 on the current evidence.
 
 ## Facts
 
-- E0 T0–T6 passed in a fresh run: 8 tests passed.
-- The preregistered threshold scan evaluated all seven fixed thresholds at the calibration seed `8675309` on the first required graph size, N=64. Every P threshold exceeded the NRMSE limit of `1e-3` on the sparse-pulse workload (observed NRMSE 0.127955–0.160646). Every B2 threshold also failed calibration.
-- P met the NRMSE limit for the smooth workload only at `3e-5` and `1e-5`; the co-primary pulse workload still failed. Under the frozen rule, no IRCN threshold was eligible.
-- E1 evaluation-seed runs, comparator timing, and G1 inferential tests did not run. `E1_results.csv` is header-only. E2/E3/E4 did not run.
-- The E1 calibration artifact includes input hashes, raw threshold metrics, scheduler counters, environment and code hashes. Representative untimed event traces are also retained.
+- Corrected-source E0 T0–T6 passed for run `e0_20261008_112849`.
+- Calibration run `e1_20261008_112905` found no IRCN threshold at or below the frozen NRMSE limit across required workloads and graph sizes.
+- Evaluation seeds, E1 timing, G1 statistics, and E2/E3/E4 were not run. `E1_results.csv` is header-only.
+- An earlier calibration attempt was invalidated after code review found a broken segmented oracle and event queue semantics; its raw artifacts are retained and marked in the audit record.
+- The 10 ms smooth-input event cadence was used by implementation but was not explicitly frozen in v1. The corrected calibration is therefore an implementation-level probe, not fully confirmatory evidence; see `protocol_deviations.md`.
 
 ## Interpretation
 
-The tested event scheduler configuration failed the frozen trajectory-quality gate before efficiency could be assessed. Therefore no speed or Pareto claim is supportable. This result rejects continuing this exact implementation/configuration into the connectome stage; it does not establish a universal negative result for event-driven local solvers.
+The corrected implementation still fails calibration eligibility, and the cadence omission limits the calibration's confirmatory status. No efficiency claim is supportable. The operational decision is to stop this route and not enter E2; this does not reject all local event solvers.
 
 ## Unresolved
 
-The calibration errors do not isolate the error source. Pulse-boundary semantics, asynchronous neighbor-state staleness, and the local prediction/refinement rule remain possible contributors. No permitted profiling-based repair was established, so no repair-and-retest cycle was performed. The legacy code audit is limited to the audit notes supplied in the v0.2 plan because its source checkout was unavailable.
+The specific sources of remaining trajectory error are not isolated. Per-method RSS is not attributable with the current shared-process high-water measurement. Dense versus CSR kernels for B1/B3 also need a pre-outcome choice before any future timed E1. The legacy source-level audit remains incomplete.
 
 ## E2 recommendation
 
-**Not worth proceeding to E2 on the current evidence.** E2 requires an accuracy-qualified computation first; adding real topology now would confound structural interpretation with an already-failing solver. A future proposal would need a new, pre-outcome freeze after diagnosing the numerical failure and would not inherit this run's results as validation.
+Not worth proceeding to E2 on this evidence. A future attempt requires numerical diagnosis and a new preregistration; do not carry these failed runs forward as validation.
