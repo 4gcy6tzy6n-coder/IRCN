@@ -1,0 +1,40 @@
+stage: v0.7.0
+status: software_semantics_only
+contract: model/v0.7.0/DEVELOPMENT_CONTRACT_v0.2.md
+scope:
+  task_contract: exact_v0.6.0_chain_and_input_generator
+  graph_nodes: 32
+  cell_checkpoint: result/v0.6.0/runs/final_gz_02/checkpoints/cell_state.pt
+  cell_checkpoint_sha256: b8df57150d9030f2690eb11a7977af8c7b629e43eec228678d186d2c102168c5
+  predictor_deployment: false
+  performance_claims: false
+  connectome_or_biological_claims: false
+  e2_e3_e4: false
+tick_contract:
+  phases: [DELIVER, INPUT, CANDIDATE, DECIDE, COMMIT, PUBLISH, READOUT]
+  max_wait_ticks: 1
+  max_hold_ticks: 5
+  max_consecutive_holds: 5
+  initial_last_update_tick: -1
+  refine_enabled: false
+acceptance:
+  max_abs_state_error: 1.0e-10
+  max_abs_readout_error: 1.0e-10
+  exact_repeat_trace_bytes: true
+  exact_repeat_semantic_hash: true
+parity_fixtures:
+  top_level_seeds: [300, 301, 302, 303, 304, 305, 306, 307, 308, 309]
+  trajectory_indices: [0, 1]
+  golden_fixtures: [single_source_pulse_tick0]
+  ticks: 16
+  statistical_interpretation: none_implementation_fixtures_only
+determinism:
+  dtype: float64
+  backend: cpu
+  trace_format: utf8_jsonl_fixed_schema_hex_floats
+  non_deterministic_fields_excluded_from_semantic_hash: [wall_time, cpu_time, peak_rss, timestamp, environment]
+completion_gate:
+  independent_pre_implementation_review: required
+  independent_post_implementation_defect_review: required
+  major_blocker_fixes_re_review: required
+  result_manifest_consistency_review: required
