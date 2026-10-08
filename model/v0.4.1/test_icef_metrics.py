@@ -8,6 +8,9 @@ import pytest
 spec = importlib.util.spec_from_file_location("icef_metrics", Path(__file__).with_name("icef_metrics.py"))
 icef = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(icef)
+task_spec = importlib.util.spec_from_file_location("diagnostic_tasks", Path(__file__).with_name("diagnostic_tasks.py"))
+tasks = importlib.util.module_from_spec(task_spec)
+task_spec.loader.exec_module(tasks)
 
 
 def test_c1_known_selectivity_and_undefined_groups():
@@ -58,3 +61,57 @@ def test_rejects_invalid_k_and_nonmonotonic_time():
         icef.influence_fidelity([1], [1], k=2)
     with pytest.raises(ValueError):
         icef.stable_recovery_time([0, 0], [1, 0], threshold=0.5, dwell=0)
+
+
+def test_sparse_task_known_answer_path_and_non_descendants():
+    task = tasks.sparse_propagation()
+    assert task["output"][8] == pytest.approx(0.8**7)
+    assert task["output"][-1] > 0
+    assert np.all(task["states"][:, 8:] == 0)
+
+
+def test_multiscale_task_known_answer_recurrences():
+    task = tasks.multiscale_integration(steps=8, fast_period=2, slow_period=4)
+    assert task["fast"][1] == pytest.approx(0.5)
+    assert task["fast"][2] == pytest.approx(0.75)
+    assert task["fast"][3] == pytest.approx(-0.125)
+    assert task["slow"][1] == pytest.approx(0.02)
+    assert np.allclose(task["target"], task["slow"] + task["fast"])
+
+
+@pytest.mark.parametrize("cue", [0, 1])
+@pytest.mark.parametrize("delay", [5, 20, 50])
+def test_quiet_memory_task_preserves_query(cue, delay):
+    task = tasks.feedback_memory(cue, delay)
+    assert task["query_output"] == task["target"]
+    assert task["memory"].size == delay + 2
+
+
+def test_task_generator_rejects_invalid_inputs():
+    with pytest.raises(ValueError):
+        tasks.sparse_propagation(n_nodes=7)
+    with pytest.raises(ValueError):
+        tasks.feedback_memory(2, 4)
+    with pytest.raises(ValueError):
+        tasks.mean_squared_error(np.array([1.0]), np.array([1.0, 2.0]))
+
+
+def test_budget_controls_are_exact_reproducible_and_oracle_discriminates():
+    activity = np.zeros((4, 4))
+    activity[2:, 2:] = 10
+    critical = np.zeros((4, 4), dtype=bool)
+    critical[0, 0] = critical[1, 0] = True
+    random_a = tasks.budget_matched_schedule(activity, 2, method="random", seed=17)
+    random_b = tasks.budget_matched_schedule(activity, 2, method="random", seed=17)
+    oracle = tasks.budget_matched_schedule(activity, 2, method="oracle", critical=critical)
+    activity_gate = tasks.budget_matched_schedule(activity, 2, method="activity")
+    periodic = tasks.budget_matched_schedule(activity, 2, method="periodic")
+    assert random_a.sum() == random_b.sum() == oracle.sum() == activity_gate.sum() == periodic.sum() == 2
+    assert np.array_equal(random_a, random_b)
+    assert np.all(oracle[critical])
+    assert not np.any(activity_gate & critical)
+
+
+def test_oracle_schedule_requires_explicit_known_answer():
+    with pytest.raises(ValueError):
+        tasks.budget_matched_schedule(np.zeros((2, 2)), 1, method="oracle")

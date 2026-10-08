@@ -5,10 +5,10 @@
 ## Facts
 
 - Implemented metric helpers for C1 compute selectivity, C2 influence ranking/sign, C3 event latency and stable recovery, C4 long-horizon loss/state-bound summaries, C5 quality-cost Pareto filtering, and C6 paired structure contrasts.
-- Nine known-answer / input-validation tests pass for the Phase II metric library. The existing project regression suite passes 47 tests.
+- Twenty known-answer / input-validation tests pass for the Phase II metrics and task generators. The existing project regression suite passes 47 tests.
 - The C2 output uses a single top-k overlap statistic; quality and cost remain separate. Undefined correlation and censored recovery are preserved as NaN rather than assigned favorable or unfavorable values.
-- Phase II consumed only synthetic inline test vectors. It did not train a network, generate task labels, run a scheduler, compare algorithms, use connectome data, or change v0.3 results.
-- Three unexecuted mechanism-targeted task specifications now cover sparse propagation, multiscale latent integration, and quiet feedback-dependent memory. These are candidate diagnostic protocols, not confirmatory tasks or independent real-world validation.
+- Phase II used only deterministic synthetic known-answer fixtures. Three reference task generators and exact-budget periodic/random/activity/oracle opportunity-mask controls are implemented and tested. They do not execute stateful schedulers or compare algorithms.
+- It did not train a network, generate counterfactual task labels, measure runtime, use connectome data, or change v0.3 results. The task specifications are diagnostic prototypes, not confirmatory tasks or independent real-world validation.
 
 ## Interpretation
 
@@ -24,16 +24,17 @@ The prototype verifies basic arithmetic, input contracts, sign conventions, tie 
 6. C6 does not generate or validate degree/module matched graphs; it summarizes paired outcomes only.
 7. No task thresholds, sample sizes, or acceptance margins were frozen. Accordingly no metric can be used for a confirmatory pass/fail decision yet.
 
-These gaps prevent claiming Phase II complete as a validated ICEF framework. The current deliverable is a tested prototype that makes several estimands executable and exposes remaining measurement work.
+These gaps prevent claiming a validated ICEF framework. The Phase II deliverable is an executable measurement prototype with deterministic task/control generators and explicit remaining work.
 
 ## Decision
 
-Continue only measurement-system development. Before Phase III, implement task generators and the matched baseline harness, complete the missing metric/harness components, expand prior-art review, define one independent realistic task, freeze budgets and statistical units, and validate discriminant behavior using known-answer and adversarial controls. No Phase III capability or Phase IV connectome experiment was run in this phase.
+Continue only measurement-system development. Before any confirmatory Phase III run, implement a stateful matched baseline harness, complete missing metric/cost components, expand prior-art review, define one independent realistic task, freeze budgets and statistical units, and assess discriminant behavior using known-answer and adversarial controls. No Phase III capability or Phase IV connectome experiment was run in this phase.
 
 ## Artifacts
 
 - Metric contract: `model/v0.4.1/ICEF_PROTOCOL_v0.1.md`
 - Candidate diagnostic tasks: `model/v0.4.1/DIAGNOSTIC_TASKS_v0.1.md`
+- Deterministic generators and budget control masks: `model/v0.4.1/diagnostic_tasks.py`
 - Executable functions: `model/v0.4.1/icef_metrics.py`
 - Known-answer tests: `model/v0.4.1/test_icef_metrics.py`
 - Test summary: `result/v0.4.1/EVALUATION.csv`
