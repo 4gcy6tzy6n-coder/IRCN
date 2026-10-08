@@ -1,0 +1,6 @@
+{
+  "contract": "contracts/V03_WP2_INFLUENCE_v1.yaml",
+  "sha256": "f81da88afa5bc6d3a5ae204132f7afa74b32a00afdf7ecc6a1e2fc0f43574328",
+  "status": "FROZEN_BEFORE_LABEL_GENERATION",
+  "protocol_plan_sha256": "7f7e695c8ba1fa4f3d71808a8512496b93898b326efa0cea662c046a7cd4d5bf"
+}

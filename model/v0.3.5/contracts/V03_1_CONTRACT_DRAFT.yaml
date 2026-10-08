@@ -1,0 +1,41 @@
+contract_id: IRCN-v0.3.1-prospective-contract
+status: FROZEN_AFTER_CALIBRATION_ORACLE_AUDIT_BEFORE_CONFIRMATORY_EVALUATION
+parent_contract: IRCN-v0.3-pre-registration-2
+parent_contract_sha256: e403bf611630cd89fd31cd49fe4961bd43d88df789cb966915b49460ee59c55c
+source_document_sha256: 7f7e695c8ba1fa4f3d71808a8512496b93898b326efa0cea662c046a7cd4d5bf
+purpose: Correct task-to-system input mapping; retain prior v0.3 runs as invalidated history.
+scope:
+  population_sizes: [16, 64, 128]
+  graph_families: [chain, star, feedback_ring, modular_sparse]
+  tasks: [smooth, sparse_pulse, dense_burst, state_switch]
+  calibration_seeds: [101, 131]
+  confirmatory_seeds: [11, 23, 37, 53, 71]
+  duration_seconds: 2.0
+  sample_dt_seconds: 0.01
+  inputs:
+    driven_fraction: 0.05
+    mapping: "U is zero outside selected driven node rows; U[i,i] is the only nonzero input gain in each selected row"
+    input_gain_distribution: "N(0, 0.05^2), independent deterministic RNG stream seed+300000+N"
+    task_rng_streams: "graph seed; state seed+5000+N; input seed+300000+N"
+  solver:
+    equation: "dh/dt=(-h+tanh(Wh+Ux+b))/tau"
+    tau_range: [0.5, 2.0]
+    graph_row_abs_sum_max: 0.5
+    oracle: "segmented DOP853 rtol=1e-11 atol=1e-13; audit at 1e-13/1e-15"
+  numerical_acceptance:
+    derivation_rule: "max(1e-8, 100 * maximum oracle self-convergence relative NRMSE) computed only on calibration seeds"
+    numeric_value: 6.837551017609374e-08
+    changed_from_parent_contract: true
+    rationale: "input semantics corrected; old numeric value is not inherited"
+    audit_artifact: reports/WP1_v031/oracle_precision_audit.json
+  event_methods:
+    thresholds: [0.01, 0.03, 0.1]
+    max_interval_seconds: 0.05
+    gate_period_seconds: 0.01
+  statuses:
+    WP1: NOT_RUN
+    WP2: BLOCKED_UNTIL_WP1_PASS
+    WP3: BLOCKED_UNTIL_WP1_AND_WP2_PASS
+    WP4: BLOCKED_UNTIL_WP1_WP3_PASS
+    WP5: BLOCKED_UNTIL_WP1_WP3_PASS
+    WP6: BLOCKED_UNTIL_FIXED_ALGORITHM

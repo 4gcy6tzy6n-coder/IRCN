@@ -1,0 +1,17 @@
+{
+  "analysis_status": "INCONCLUSIVE",
+  "reason": "post-generation import-path repair; no contract or raw-label change",
+  "python": "3.12.13 (main, Mar  3 2026, 15:35:03) [Clang 21.1.4 ]",
+  "platform": "macOS-26.2-arm64-arm-64bit",
+  "contract_sha256": "f81da88afa5bc6d3a5ae204132f7afa74b32a00afdf7ecc6a1e2fc0f43574328",
+  "raw_labels_sha256": "683b3fb5182dc86420ba9f1a545344bc33b685f9bd20732eb404b37d4d758ed9",
+  "analysis_sha256": "8692e442f86e7e9f828a8a3557c70979798e79a6fbd455bc08d8a9d1e59a08fa",
+  "analysis_code_sha256": {
+    "experiments/WP2/analyze_labels.py": "6afd40e13b0d317479b23186a67a856d0d75ef56963e3106aeb63445f3c143df",
+    "experiments/WP2/run_experiment.py": "422a9b1eb67f7f85e3f2dd6e45920034c9322ce7c00eb750fd9c102b497db725",
+    "experiments/WP2/generate_labels.py": "a4d4390180f5ab73a4e049108fa785ea4337c225735e59178a78bebef10fbc19",
+    "contracts/V03_WP2_INFLUENCE_v1.yaml": "f81da88afa5bc6d3a5ae204132f7afa74b32a00afdf7ecc6a1e2fc0f43574328"
+  },
+  "analysis_completed_after_repair": true,
+  "downstream_science_executed": false
+}

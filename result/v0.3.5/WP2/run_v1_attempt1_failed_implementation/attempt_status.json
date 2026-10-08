@@ -1,0 +1,83 @@
+{
+  "attempt": "run_v1_attempt1_failed_implementation",
+  "contract_sha256": "f81da88afa5bc6d3a5ae204132f7afa74b32a00afdf7ecc6a1e2fc0f43574328",
+  "failure_type": "implementation bug: local_node_update_seconds call omitted snapshot-time positional argument",
+  "failed_instances": 7,
+  "failures": [
+    {
+      "error": "TypeError(\"local_node_update_seconds() missing 1 required positional argument: 'node'\")",
+      "graph": "chain",
+      "n": 16,
+      "partial_rows_preserved": 0,
+      "seed": 16001,
+      "split": "train",
+      "task": "smooth",
+      "traceback": "Traceback (most recent call last):\n  File \"/Users/yyl/Desktop/workshop/NMI/IRCN/experiments/WP2/generate_labels.py\", line 124, in main\n    records,meta=row_for(graph,n,task,seed,split,emit); meta.update(split=split)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yyl/Desktop/workshop/NMI/IRCN/experiments/WP2/generate_labels.py\", line 102, in row_for\n    node_cost=local_node_update_seconds(system,x,hfeat,int(node))\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: local_node_update_seconds() missing 1 required positional argument: 'node'\n"
+    },
+    {
+      "error": "TypeError(\"local_node_update_seconds() missing 1 required positional argument: 'node'\")",
+      "graph": "chain",
+      "n": 16,
+      "partial_rows_preserved": 0,
+      "seed": 16002,
+      "split": "train",
+      "task": "smooth",
+      "traceback": "Traceback (most recent call last):\n  File \"/Users/yyl/Desktop/workshop/NMI/IRCN/experiments/WP2/generate_labels.py\", line 124, in main\n    records,meta=row_for(graph,n,task,seed,split,emit); meta.update(split=split)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yyl/Desktop/workshop/NMI/IRCN/experiments/WP2/generate_labels.py\", line 102, in row_for\n    node_cost=local_node_update_seconds(system,x,hfeat,int(node))\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: local_node_update_seconds() missing 1 required positional argument: 'node'\n"
+    },
+    {
+      "error": "TypeError(\"local_node_update_seconds() missing 1 required positional argument: 'node'\")",
+      "graph": "chain",
+      "n": 16,
+      "partial_rows_preserved": 0,
+      "seed": 16003,
+      "split": "train",
+      "task": "smooth",
+      "traceback": "Traceback (most recent call last):\n  File \"/Users/yyl/Desktop/workshop/NMI/IRCN/experiments/WP2/generate_labels.py\", line 124, in main\n    records,meta=row_for(graph,n,task,seed,split,emit); meta.update(split=split)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yyl/Desktop/workshop/NMI/IRCN/experiments/WP2/generate_labels.py\", line 102, in row_for\n    node_cost=local_node_update_seconds(system,x,hfeat,int(node))\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: local_node_update_seconds() missing 1 required positional argument: 'node'\n"
+    },
+    {
+      "error": "TypeError(\"local_node_update_seconds() missing 1 required positional argument: 'node'\")",
+      "graph": "chain",
+      "n": 16,
+      "partial_rows_preserved": 0,
+      "seed": 16004,
+      "split": "train",
+      "task": "smooth",
+      "traceback": "Traceback (most recent call last):\n  File \"/Users/yyl/Desktop/workshop/NMI/IRCN/experiments/WP2/generate_labels.py\", line 124, in main\n    records,meta=row_for(graph,n,task,seed,split,emit); meta.update(split=split)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yyl/Desktop/workshop/NMI/IRCN/experiments/WP2/generate_labels.py\", line 102, in row_for\n    node_cost=local_node_update_seconds(system,x,hfeat,int(node))\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: local_node_update_seconds() missing 1 required positional argument: 'node'\n"
+    },
+    {
+      "error": "TypeError(\"local_node_update_seconds() missing 1 required positional argument: 'node'\")",
+      "graph": "chain",
+      "n": 16,
+      "partial_rows_preserved": 0,
+      "seed": 16005,
+      "split": "train",
+      "task": "smooth",
+      "traceback": "Traceback (most recent call last):\n  File \"/Users/yyl/Desktop/workshop/NMI/IRCN/experiments/WP2/generate_labels.py\", line 124, in main\n    records,meta=row_for(graph,n,task,seed,split,emit); meta.update(split=split)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yyl/Desktop/workshop/NMI/IRCN/experiments/WP2/generate_labels.py\", line 102, in row_for\n    node_cost=local_node_update_seconds(system,x,hfeat,int(node))\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: local_node_update_seconds() missing 1 required positional argument: 'node'\n"
+    },
+    {
+      "error": "TypeError(\"local_node_update_seconds() missing 1 required positional argument: 'node'\")",
+      "graph": "chain",
+      "n": 16,
+      "partial_rows_preserved": 0,
+      "seed": 16006,
+      "split": "train",
+      "task": "smooth",
+      "traceback": "Traceback (most recent call last):\n  File \"/Users/yyl/Desktop/workshop/NMI/IRCN/experiments/WP2/generate_labels.py\", line 124, in main\n    records,meta=row_for(graph,n,task,seed,split,emit); meta.update(split=split)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yyl/Desktop/workshop/NMI/IRCN/experiments/WP2/generate_labels.py\", line 102, in row_for\n    node_cost=local_node_update_seconds(system,x,hfeat,int(node))\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: local_node_update_seconds() missing 1 required positional argument: 'node'\n"
+    },
+    {
+      "error": "TypeError(\"local_node_update_seconds() missing 1 required positional argument: 'node'\")",
+      "graph": "chain",
+      "n": 64,
+      "partial_rows_preserved": 0,
+      "seed": 64001,
+      "split": "train",
+      "task": "smooth",
+      "traceback": "Traceback (most recent call last):\n  File \"/Users/yyl/Desktop/workshop/NMI/IRCN/experiments/WP2/generate_labels.py\", line 124, in main\n    records,meta=row_for(graph,n,task,seed,split,emit); meta.update(split=split)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yyl/Desktop/workshop/NMI/IRCN/experiments/WP2/generate_labels.py\", line 102, in row_for\n    node_cost=local_node_update_seconds(system,x,hfeat,int(node))\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: local_node_update_seconds() missing 1 required positional argument: 'node'\n"
+    }
+  ],
+  "raw_label_rows": 0,
+  "completed_instance_logs": 0,
+  "analysis_performed": false,
+  "scientific_results_valid": false,
+  "next_action": "repair call signature, rerun full frozen scope without changing any contract field"
+}

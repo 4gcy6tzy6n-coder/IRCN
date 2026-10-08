@@ -1,0 +1,40 @@
+contract_id: IRCN-v0.3.3-ode-segment-calibration
+status: FROZEN_BEFORE_CALIBRATION_SCREEN
+parent_diagnostic: contracts/V03_2_SMOOTH_GATE_DIAGNOSTIC.yaml
+purpose: Screen one repaired causal local ODE segment configuration on the full frozen calibration scope before deciding whether confirmatory WP1 is justified.
+scientific_claims_allowed: false
+scope:
+  graph_families: [chain, star, feedback_ring, modular_sparse]
+  population_sizes: [16, 64, 128]
+  tasks: [smooth, sparse_pulse, dense_burst, state_switch]
+  calibration_seeds: [101, 131]
+  confirmatory_seeds: [11, 23, 37, 53, 71]
+  duration_seconds: 2.0
+  sample_dt_seconds: 0.01
+input:
+  driven_fraction: 0.05
+  mapping: "U is zero outside selected driven node rows; U[i,i] is the only nonzero input gain in each selected row"
+  rng_streams: "input seed; graph seed; state seed+5000+N; gain seed+300000+N"
+candidate:
+  solver: causal_local_ode_segments
+  segment_tolerance: 1.0e-7
+  max_interval_seconds: 0.05
+  smooth_input_gate_seconds: 0.001
+  discontinuous_inputs: "use exact declared breakpoints"
+  local_integrator: DOP853
+  local_rtol: 1.0e-9
+  local_atol: 1.0e-11
+oracle:
+  solver: segmented_DOP853
+  rtol: 1.0e-13
+  atol: 1.0e-15
+accuracy:
+  relative_nrmse_limit: 6.837551017609374e-08
+  derivation_contract: contracts/V03_1_CONTRACT_DRAFT.yaml
+screen_rule: Every one of the 96 calibration instances must be finite and at or below the frozen NRMSE limit; any failure blocks confirmatory WP1.
+metrics: [relative_nrmse, max_absolute_error, wall_clock_seconds, rhs_evaluations, event_count, queue_pushes]
+timing_boundary: Calibration latency is diagnostic only; no repeated timing comparison or efficiency inference is authorized by this contract.
+downstream:
+  confirmatory_wp1: "only if calibration screen passes, under the listed confirmatory seeds"
+  wp2_wp6: BLOCKED_UNTIL_VALID_WP1_PASS
+  e2: DO_NOT_RUN_IN_THIS_VERSION

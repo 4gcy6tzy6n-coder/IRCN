@@ -1,0 +1,39 @@
+contract_id: IRCN-v0.3.4i-causal-local-batch2-calibration
+status: FROZEN_BEFORE_CALIBRATION
+parent_diagnostic: reports/prototypes/local_batch_integration_diagnostic.md
+purpose: Test a conservative batching of only causally touched node integrations after v0.3.4h failed its relaxed-tolerance calibration.
+scope:
+  graph_families: [chain, star, feedback_ring, modular_sparse]
+  population_sizes: [16, 64, 128]
+  tasks: [smooth, sparse_pulse, dense_burst, state_switch]
+  calibration_seeds: [401, 409]
+  confirmatory_seeds: [419, 421, 431, 433, 439]
+  duration_seconds: 2.0
+  sample_dt_seconds: 0.01
+input:
+  mapping: "Only 5% selected node rows receive external drive; U is diagonal on those rows"
+  pulse_boundary: "pulse is off at exact falling edge; rising edge is on"
+  external_input_integration: exact_exogenous
+candidate:
+  solver: causal_local_ode_segments
+  delivery_mode: broadcast_batch
+  local_batch: true
+  local_batch_size: 2
+  segment_tolerance: 1.0e-7
+  max_interval_seconds: 0.02
+  local_integrator: DOP853
+  local_rtol: 1.0e-9
+  local_atol: 1.0e-11
+  vector_error_norm_compensation: "divide local rtol and atol by sqrt(batch_size)"
+oracle:
+  solver: segmented_DOP853
+  rtol: 1.0e-13
+  atol: 1.0e-15
+accuracy:
+  relative_nrmse_limit: 6.837551017609374e-08
+screen_rule: Every calibration instance must be finite and at or below the frozen limit. Stop at first decisive accuracy failure or solver exception; confirmatory evaluation is prohibited if any instance fails.
+metrics: [relative_nrmse, max_absolute_error, wall_clock_seconds, rhs_evaluations, event_count, heap_pushes, message_deliveries]
+timing_boundary: Single calibration-run timing is diagnostic only; it does not establish an efficiency advantage.
+downstream:
+  e2: DO_NOT_RUN_IN_THIS_VERSION
+  wp2_wp6: BLOCKED_UNTIL_VALID_WP1_PASS

@@ -1,0 +1,23 @@
+contract_id: IRCN-v0.3.4c-known-failure-diagnostic
+status: PROSPECTIVE_DIAGNOSTIC_ONLY
+parent_calibration: contracts/V03_4B_EXACT_INPUT_CALIBRATION.yaml
+purpose: Diagnose whether the known N=128 chain/sparse-pulse accuracy failure is controlled by segment-change threshold.
+not_a_scientific_gate: true
+scope:
+  graph: chain
+  population_size: 128
+  task: sparse_pulse
+  seed: 251
+  duration_seconds: 2.0
+  sample_dt_seconds: 0.01
+candidate:
+  input_mode: exact_exogenous
+  segment_tolerances: [1.0e-7, 1.0e-9, 1.0e-11]
+  max_interval_seconds: 0.05
+  local_rtol: 1.0e-9
+  local_atol: 1.0e-11
+oracle:
+  rtol: 1.0e-13
+  atol: 1.0e-15
+metrics: [relative_nrmse, max_absolute_error, wall_clock_seconds, event_count]
+interpretation_boundary: This is tuning diagnostics on the already exposed failure seed; no confirmatory inference or eligibility claim.

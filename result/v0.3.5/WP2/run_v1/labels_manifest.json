@@ -1,0 +1,91 @@
+{
+  "python": "3.12.13",
+  "platform": "macOS-26.2-arm64-arm-64bit",
+  "numpy": "2.4.4",
+  "scipy": "1.17.1",
+  "contract_sha256": "f81da88afa5bc6d3a5ae204132f7afa74b32a00afdf7ecc6a1e2fc0f43574328",
+  "scheduler_sha256": "67df7cfb70c734db0dfb6833148cac4545d78fdfaf5a17770deb222fab420a3d",
+  "code_sha256": {
+    "src/events/ode_segment_scheduler.py": "67df7cfb70c734db0dfb6833148cac4545d78fdfaf5a17770deb222fab420a3d",
+    "src/events/inputs.py": "eecd35cd0a78d2f14428a42a451d41e1fb1aed5a78a27f61bcb6de189e0c15ff",
+    "src/dynamics/tasks.py": "bfa5d2b331f97e70541eebc8ba124548794d2cb4f45b3cd609a70970c5a486af",
+    "src/solvers/oracle.py": "9ebea48726cded0ce84b867bfb735c9fbae47aceb321b489c056625fab3d3019",
+    "experiments/WP2/generate_labels.py": "a4d4390180f5ab73a4e049108fa785ea4337c225735e59178a78bebef10fbc19",
+    "experiments/WP2/analyze_labels.py": "70344d94ade1d2b7212cdb76aa788cc9cce0b5397de809ab479c15a778c1de8c",
+    "experiments/WP2/run_experiment.py": "cbe9a3c069c37514e54ee35492bf6cc8f6e8b5045e1450eae4977998b3e1fb56"
+  },
+  "rows": 50176,
+  "expected_rows": 50176,
+  "instances": 528,
+  "expected_instances": 528,
+  "failures": 0,
+  "input_seed_splits": {
+    "train": {
+      "16": [
+        16001,
+        16002,
+        16003,
+        16004,
+        16005,
+        16006
+      ],
+      "64": [
+        64001,
+        64002,
+        64003,
+        64004,
+        64005,
+        64006
+      ],
+      "128": [
+        128001,
+        128002,
+        128003,
+        128004,
+        128005,
+        128006
+      ]
+    },
+    "validation": {
+      "16": [
+        16011,
+        16012
+      ],
+      "64": [
+        64011,
+        64012
+      ],
+      "128": [
+        128011,
+        128012
+      ]
+    },
+    "test": {
+      "16": [
+        16021,
+        16022,
+        16023,
+        16024,
+        16025
+      ],
+      "64": [
+        64021,
+        64022,
+        64023,
+        64024,
+        64025
+      ],
+      "128": [
+        128021,
+        128022,
+        128023,
+        128024,
+        128025
+      ]
+    }
+  },
+  "raw_sha256": "683b3fb5182dc86420ba9f1a545344bc33b685f9bd20732eb404b37d4d758ed9",
+  "instances_sha256": "85a2af8334992fdd360429780dbcc134cb9267ed6ec39cf9fb91a4c83141a20e",
+  "attempts_sha256": "3197332d8092dddd812ea0b0dbebfb28aa4fa14b233243d20e7c9343ca3cea9b",
+  "downstream_science_executed": false
+}

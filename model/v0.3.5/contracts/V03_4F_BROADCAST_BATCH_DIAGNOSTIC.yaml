@@ -1,0 +1,25 @@
+contract_id: IRCN-v0.3.4f-broadcast-batch-diagnostic
+status: PROSPECTIVE_DIAGNOSTIC_ONLY
+parent_calibration: contracts/V03_4E_EXACT_INPUT_CALIBRATION.yaml
+purpose: Measure the effect of batching event-queue broadcasts on one previously measured high-cost calibration instance.
+not_a_scientific_gate: true
+scope:
+  graph: modular_sparse
+  population_size: 128
+  task: dense_burst
+  seed: 271
+  duration_seconds: 2.0
+  sample_dt_seconds: 0.01
+candidate:
+  solver: causal_local_ode_segments
+  input_mode: exact_exogenous
+  delivery_mode: broadcast_batch
+  segment_tolerance: 1.0e-7
+  max_interval_seconds: 0.02
+baseline_reference: reports/WP1_v034e/calibration_raw.jsonl row for this instance (edge_messages mode; single calibration timing)
+oracle:
+  solver: segmented_DOP853
+  rtol: 1.0e-13
+  atol: 1.0e-15
+metrics: [relative_nrmse, max_absolute_error, wall_clock_seconds, heap_pushes, message_deliveries, event_count]
+interpretation_boundary: One-sample implementation diagnostic only; no performance claim or general inference.

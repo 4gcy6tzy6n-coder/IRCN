@@ -1,0 +1,23 @@
+contract_id: IRCN-v0.3.4g-local-integrator-tolerance-diagnostic
+status: PROSPECTIVE_DIAGNOSTIC_ONLY
+parent_calibration: contracts/V03_4E_EXACT_INPUT_CALIBRATION.yaml
+purpose: Determine whether local DOP853 tolerance is over-solving relative to the frozen trajectory criterion and contributes to high runtime.
+not_a_scientific_gate: true
+scope:
+  graph: modular_sparse
+  population_size: 128
+  task: dense_burst
+  seed: 271
+  duration_seconds: 0.2
+  sample_dt_seconds: 0.01
+candidate:
+  input_mode: exact_exogenous
+  delivery_mode: broadcast_batch
+  segment_tolerance: 1.0e-7
+  max_interval_seconds: 0.02
+  local_tolerances: [[1.0e-9, 1.0e-11], [1.0e-7, 1.0e-9], [1.0e-6, 1.0e-8]]
+oracle:
+  rtol: 1.0e-13
+  atol: 1.0e-15
+metrics: [relative_nrmse, max_absolute_error, wall_clock_seconds, rhs_evaluations, event_count, heap_pushes]
+interpretation_boundary: Known calibration instance only; no confirmatory inference or general performance claim.

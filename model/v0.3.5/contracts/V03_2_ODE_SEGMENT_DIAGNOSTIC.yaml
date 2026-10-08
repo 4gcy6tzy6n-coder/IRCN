@@ -1,0 +1,30 @@
+contract_id: IRCN-v0.3.2-ode-segment-diagnostic
+status: PROSPECTIVE_DIAGNOSTIC_ONLY
+parent_decision: reports/WP1_v031/decision_v1.md
+purpose: Diagnose whether the repaired causal local ODE segment prototype has a viable accuracy-cost direction before considering a new confirmatory contract.
+not_a_scientific_gate: true
+scope:
+  graph_families: [chain, feedback_ring]
+  population_sizes: [16]
+  tasks: [sparse_pulse, smooth]
+  calibration_seeds: [101]
+  confirmatory_seeds_used: false
+  duration_seconds: 0.2
+  sample_dt_seconds: 0.01
+oracle:
+  solver: DOP853
+  rtol: 1.0e-13
+  atol: 1.0e-15
+candidate:
+  solver: causal_local_ode_segments
+  segment_tolerances: [1.0e-3, 1.0e-5, 1.0e-7]
+  max_intervals_seconds: [0.05, 0.01, 0.002]
+  integration_rtol: 1.0e-9
+  integration_atol: 1.0e-11
+metrics:
+  - relative_nrmse
+  - max_absolute_error
+  - wall_clock_seconds
+  - rhs_evaluations
+  - event_count
+interpretation_boundary: Results are implementation diagnostics on calibration data only; no correctness gate, efficiency claim, or confirmatory inference may be made.
