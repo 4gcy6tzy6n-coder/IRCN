@@ -1,0 +1,117 @@
+{
+  "method": "deterministic gzip; lossless CSV transformation",
+  "files": [
+    {
+      "path": "final_repro_01/raw/cell_test_trajectory_metrics.csv",
+      "sha256": "e5e91025aad6741c42e8b4207bda7d8a6c2a38ab4be28184828ef3d0eb32e9be",
+      "compressed_path": "final_repro_01/raw/cell_test_trajectory_metrics.csv.gz",
+      "compressed_sha256": "b044a54380ec3131097e5177e06e12c9c353c85eab7a74c7bb891a380bbd5ac3",
+      "bytes_before": 55302,
+      "bytes_after": 29864
+    },
+    {
+      "path": "final_repro_01/raw/counterfactual_labels_test.csv",
+      "sha256": "c0773572bffba34b4f80f0d03503f6f8cfdc47378793d861a187a37676cce9f4",
+      "compressed_path": "final_repro_01/raw/counterfactual_labels_test.csv.gz",
+      "compressed_sha256": "5caadcd1a36e8e5db593f459578a3811413226825073bbe08882445d1d98ef9f",
+      "bytes_before": 98033737,
+      "bytes_after": 7121744
+    },
+    {
+      "path": "final_repro_01/raw/counterfactual_labels_train.csv",
+      "sha256": "d9dcef92fbe09593898fb15e8292b2b9fb291bd16e4bba75bce8d2449a1fbb82",
+      "compressed_path": "final_repro_01/raw/counterfactual_labels_train.csv.gz",
+      "compressed_sha256": "4c9172fadd65994967ff3296d3e1f929508ef8bc512a6c48fa6f72a21880bba3",
+      "bytes_before": 98157883,
+      "bytes_after": 7128722
+    },
+    {
+      "path": "final_repro_01/raw/counterfactual_labels_validation.csv",
+      "sha256": "871db47ee1e52c063483f555cb3019fc3c53435cb4fb397928a1e233379006cc",
+      "compressed_path": "final_repro_01/raw/counterfactual_labels_validation.csv.gz",
+      "compressed_sha256": "5d46eae474431dcbb7c3277193a59543c0d988f2bce2d8064c179c0489898142",
+      "bytes_before": 49385156,
+      "bytes_after": 3587461
+    },
+    {
+      "path": "final_repro_01/raw/test_predictions.csv",
+      "sha256": "3bb0d47a3af9d47bb28b53aa93a7fd67adf82f8c89b2acf91dc3a9a7b5cdaf07",
+      "compressed_path": "final_repro_01/raw/test_predictions.csv.gz",
+      "compressed_sha256": "6c138f8a818c94c64cc606112f75a599b5fa1cf7cbadf7f9c393878e5c4a354c",
+      "bytes_before": 117780800,
+      "bytes_after": 9536743
+    },
+    {
+      "path": "final_repro_01/raw/test_seed_metrics.csv",
+      "sha256": "f2c0a951b22548c5c9b3c3ae2bc074c62f32e592195e6d6c849d35ffa7ed1200",
+      "compressed_path": "final_repro_01/raw/test_seed_metrics.csv.gz",
+      "compressed_sha256": "0e2e5cc851b5466b806d9a94fdec3ae87b79856d2ce12a3b773a5d72c85e7e49",
+      "bytes_before": 7941,
+      "bytes_after": 2932
+    },
+    {
+      "path": "final_repro_01/raw/test_trajectory_metrics.csv",
+      "sha256": "d62afde7e944b5c670fee968ae8d6225979658ac981f3463336994aaf4af4333",
+      "compressed_path": "final_repro_01/raw/test_trajectory_metrics.csv.gz",
+      "compressed_sha256": "af4df2208748a0866ab44704cbabf1dd486fec80c2c60c4d53f3821f17c3cd4d",
+      "bytes_before": 200718,
+      "bytes_after": 58314
+    },
+    {
+      "path": "final_repro_02/raw/cell_test_trajectory_metrics.csv",
+      "sha256": "e5e91025aad6741c42e8b4207bda7d8a6c2a38ab4be28184828ef3d0eb32e9be",
+      "compressed_path": "final_repro_02/raw/cell_test_trajectory_metrics.csv.gz",
+      "compressed_sha256": "b044a54380ec3131097e5177e06e12c9c353c85eab7a74c7bb891a380bbd5ac3",
+      "bytes_before": 55302,
+      "bytes_after": 29864
+    },
+    {
+      "path": "final_repro_02/raw/counterfactual_labels_test.csv",
+      "sha256": "c0773572bffba34b4f80f0d03503f6f8cfdc47378793d861a187a37676cce9f4",
+      "compressed_path": "final_repro_02/raw/counterfactual_labels_test.csv.gz",
+      "compressed_sha256": "5caadcd1a36e8e5db593f459578a3811413226825073bbe08882445d1d98ef9f",
+      "bytes_before": 98033737,
+      "bytes_after": 7121744
+    },
+    {
+      "path": "final_repro_02/raw/counterfactual_labels_train.csv",
+      "sha256": "d9dcef92fbe09593898fb15e8292b2b9fb291bd16e4bba75bce8d2449a1fbb82",
+      "compressed_path": "final_repro_02/raw/counterfactual_labels_train.csv.gz",
+      "compressed_sha256": "4c9172fadd65994967ff3296d3e1f929508ef8bc512a6c48fa6f72a21880bba3",
+      "bytes_before": 98157883,
+      "bytes_after": 7128722
+    },
+    {
+      "path": "final_repro_02/raw/counterfactual_labels_validation.csv",
+      "sha256": "871db47ee1e52c063483f555cb3019fc3c53435cb4fb397928a1e233379006cc",
+      "compressed_path": "final_repro_02/raw/counterfactual_labels_validation.csv.gz",
+      "compressed_sha256": "5d46eae474431dcbb7c3277193a59543c0d988f2bce2d8064c179c0489898142",
+      "bytes_before": 49385156,
+      "bytes_after": 3587461
+    },
+    {
+      "path": "final_repro_02/raw/test_predictions.csv",
+      "sha256": "3bb0d47a3af9d47bb28b53aa93a7fd67adf82f8c89b2acf91dc3a9a7b5cdaf07",
+      "compressed_path": "final_repro_02/raw/test_predictions.csv.gz",
+      "compressed_sha256": "6c138f8a818c94c64cc606112f75a599b5fa1cf7cbadf7f9c393878e5c4a354c",
+      "bytes_before": 117780800,
+      "bytes_after": 9536743
+    },
+    {
+      "path": "final_repro_02/raw/test_seed_metrics.csv",
+      "sha256": "f2c0a951b22548c5c9b3c3ae2bc074c62f32e592195e6d6c849d35ffa7ed1200",
+      "compressed_path": "final_repro_02/raw/test_seed_metrics.csv.gz",
+      "compressed_sha256": "0e2e5cc851b5466b806d9a94fdec3ae87b79856d2ce12a3b773a5d72c85e7e49",
+      "bytes_before": 7941,
+      "bytes_after": 2932
+    },
+    {
+      "path": "final_repro_02/raw/test_trajectory_metrics.csv",
+      "sha256": "d62afde7e944b5c670fee968ae8d6225979658ac981f3463336994aaf4af4333",
+      "compressed_path": "final_repro_02/raw/test_trajectory_metrics.csv.gz",
+      "compressed_sha256": "af4df2208748a0866ab44704cbabf1dd486fec80c2c60c4d53f3821f17c3cd4d",
+      "bytes_before": 200718,
+      "bytes_after": 58314
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "method": "deterministic gzip; lossless CSV transformation",
+  "files": [
+    {
+      "path": "cell_test_trajectory_metrics.csv",
+      "sha256": "e5e91025aad6741c42e8b4207bda7d8a6c2a38ab4be28184828ef3d0eb32e9be",
+      "compressed_path": "cell_test_trajectory_metrics.csv.gz",
+      "compressed_sha256": "b044a54380ec3131097e5177e06e12c9c353c85eab7a74c7bb891a380bbd5ac3",
+      "bytes_before": 55302,
+      "bytes_after": 29864
+    },
+    {
+      "path": "counterfactual_labels_test.csv",
+      "sha256": "dd254fd73cc0ab412e0acdd988af0a97b07b3c5363230e8550340bc4714cd066",
+      "compressed_path": "counterfactual_labels_test.csv.gz",
+      "compressed_sha256": "f5058d21602bb70a6ab4f051c07d626a6e0626dc0320ec85f08a51cdb3385f58",
+      "bytes_before": 66084849,
+      "bytes_after": 6716980
+    },
+    {
+      "path": "counterfactual_labels_train.csv",
+      "sha256": "b57ba7f2168100921d66b47be4063007b5c2c3f2fa48f450713ab3073e66a0bb",
+      "compressed_path": "counterfactual_labels_train.csv.gz",
+      "compressed_sha256": "1de2f647698cb78407027f7bcbf5a98f6458cef734ce5b4e4aa7f58c008ab3e6",
+      "bytes_before": 66208995,
+      "bytes_after": 6717882
+    },
+    {
+      "path": "counterfactual_labels_validation.csv",
+      "sha256": "b11e568f8fa77d315c518c7e1116fb6114fb50aaa49b3694f78f35ad87bd58da",
+      "compressed_path": "counterfactual_labels_validation.csv.gz",
+      "compressed_sha256": "cb84c7aa748bcfaf083dc07630a830cfb627da91764166faf0ec6fda10af5afe",
+      "bytes_before": 33410668,
+      "bytes_after": 3388719
+    },
+    {
+      "path": "test_predictions.csv",
+      "sha256": "6b983d2346e479f6f979158d5824140240b3b4fe55ae10cbbf73a216fd561e9a",
+      "compressed_path": "test_predictions.csv.gz",
+      "compressed_sha256": "6b74ed2dbcd5a1c2337182f89b2f8e2472c0ce0a0ec24809d3ee443a5ead5cc8",
+      "bytes_before": 77844684,
+      "bytes_after": 8977285
+    },
+    {
+      "path": "test_seed_metrics.csv",
+      "sha256": "f2c0a951b22548c5c9b3c3ae2bc074c62f32e592195e6d6c849d35ffa7ed1200",
+      "compressed_path": "test_seed_metrics.csv.gz",
+      "compressed_sha256": "0e2e5cc851b5466b806d9a94fdec3ae87b79856d2ce12a3b773a5d72c85e7e49",
+      "bytes_before": 7941,
+      "bytes_after": 2932
+    },
+    {
+      "path": "test_trajectory_metrics.csv",
+      "sha256": "d62afde7e944b5c670fee968ae8d6225979658ac981f3463336994aaf4af4333",
+      "compressed_path": "test_trajectory_metrics.csv.gz",
+      "compressed_sha256": "af4df2208748a0866ab44704cbabf1dd486fec80c2c60c4d53f3821f17c3cd4d",
+      "bytes_before": 200718,
+      "bytes_after": 58314
+    }
+  ]
+}

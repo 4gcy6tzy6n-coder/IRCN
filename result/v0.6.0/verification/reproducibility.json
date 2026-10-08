@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "run_ids": [
+    "final_gz_01",
+    "final_gz_02"
+  ],
+  "checks": {
+    "cell_parameters": true,
+    "cell_loss_history": true,
+    "cell_best_epoch": true,
+    "predictor_parameters": true,
+    "predictor_loss_history": true,
+    "predictor_best_epoch": true,
+    "standardization": true,
+    "raw/counterfactual_labels_train.csv.gz": true,
+    "raw/counterfactual_labels_validation.csv.gz": true,
+    "raw/counterfactual_labels_test.csv.gz": true,
+    "raw/test_predictions.csv.gz": true,
+    "raw/test_trajectory_metrics.csv.gz": true,
+    "raw/test_seed_metrics.csv.gz": true
+  },
+  "source_manifest_sha256": [
+    "700ef2d94a63669f5f38ec17e9fc2a6fb036b56d40d853265e62abd08ead02d0",
+    "700ef2d94a63669f5f38ec17e9fc2a6fb036b56d40d853265e62abd08ead02d0"
+  ]
+}

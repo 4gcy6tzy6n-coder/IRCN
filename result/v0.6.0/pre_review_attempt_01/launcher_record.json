@@ -1,0 +1,7 @@
+{
+  "status": "EXPERIMENT_COMPLETED_LAUNCHER_LOG_CAPTURE_FAILED",
+  "command": "PYTHONPATH=model/v0.6.0/src:model/v0.6.0 python -u model/v0.6.0/run_experiment.py 2>&1 | tee result/v0.6.0/logs/run.log",
+  "launcher_error": "tee: result/v0.6.0/logs/run.log: No such file or directory",
+  "python_result": "The process produced complete raw split CSVs, checkpoints, epoch logs, summary JSON, and seed metrics. The shell pipeline returned status 1 because tee could not open its destination; Python printed a successful summary.",
+  "validation": "This preliminary run is retained but superseded because per-row source/config provenance fields had not yet been added."
+}

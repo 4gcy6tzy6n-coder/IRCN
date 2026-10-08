@@ -1,0 +1,17 @@
+{
+  "train": {
+    "rows_identical_on_scientific_fields": 122880,
+    "comparison_sha256": "d9b2f0c26a8b0fa7dc04546dc15b2163a81074b74d9498dce833e47b762e443a"
+  },
+  "validation": {
+    "rows_identical_on_scientific_fields": 61440,
+    "comparison_sha256": "d5fa286d2e8e0078251fa9542263c2768eec08eb70dc147216e5c291f63710e4"
+  },
+  "test": {
+    "rows_identical_on_scientific_fields": 122880,
+    "comparison_sha256": "f85f96814983b1bea457f2f0f50fb5f46986169f01e519f9c3495ad6d1e6d7a9"
+  },
+  "cell_checkpoint_sha256": "b8df57150d9030f2690eb11a7977af8c7b629e43eec228678d186d2c102168c5",
+  "predictor_checkpoint_sha256": "d380f5718e5b3167bb973153a2b326c211d10c98dc85a56f08ec37f02cec0f53",
+  "result": "PASS"
+}
