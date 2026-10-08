@@ -1,0 +1,11 @@
+{
+  "work_package": "WP2",
+  "status": "INCONCLUSIVE",
+  "contract_sha256": "f81da88afa5bc6d3a5ae204132f7afa74b32a00afdf7ecc6a1e2fc0f43574328",
+  "run_directory": "reports/WP2/run_v1",
+  "rows": 50176,
+  "instances": 528,
+  "failed_labels": 0,
+  "candidate_accuracy_failures": 1,
+  "downstream_wp3_wp6_executed": false
+}

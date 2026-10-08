@@ -1,0 +1,3 @@
+tasks: [smooth, sparse_pulse, dense_burst, state_switch]
+duration_seconds: 2.0
+sample_dt_seconds: 0.01

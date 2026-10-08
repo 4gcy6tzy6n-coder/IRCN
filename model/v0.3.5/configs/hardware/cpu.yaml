@@ -1,0 +1,3 @@
+mode: cpu_single_process
+warmups: 2
+repetitions: 5

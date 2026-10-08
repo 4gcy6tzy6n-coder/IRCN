@@ -1,0 +1,124 @@
+contract_id: IRCN-v0.3-WP2-influence-v1
+status: FROZEN_BEFORE_LABEL_GENERATION
+parent_wp1_candidate: v0.3.4i_local_batch2
+parent_wp1_calibration_sha256: 0587a37039ca
+parent_wp1_confirmatory_sha256: 98e734a02a02
+purpose: >-
+  Test whether a low-cost, trainable predictor ranks the algorithmic full-state
+  trajectory impact of a local skipped update better than prespecified cheap
+  activity, local-error, degree, and random ranking baselines.
+claim_boundary: >-
+  Algorithmic counterfactual influence on the identity full-state readout only;
+  not task utility, biological causality, or neuronal causal effect.
+system:
+  source_contract: contracts/V03_4I_CONFIRMATORY.yaml
+  graph_families: [chain, star, feedback_ring, modular_sparse]
+  population_sizes: [16, 64, 128]
+  tasks: [smooth, sparse_pulse, dense_burst, state_switch]
+  duration_seconds: 2.0
+  nrmse_sample_dt_seconds: 0.01
+  model: "dh/dt=(-h+tanh(W h + U x + b))/tau"
+  candidate_scheduler_sha256: 67df7cfb70c734db0dfb6833148cac4545d78fdfaf5a17770deb222fab420a3d
+  feature_state_accuracy_nrmse_limit: 6.837551017609374e-08
+split:
+  unit: "input-generation seed nested within population_size and task; all graph families using the same (N, task, seed) stay in the same split"
+  training_seeds_by_n:
+    16: [16001, 16002, 16003, 16004, 16005, 16006]
+    64: [64001, 64002, 64003, 64004, 64005, 64006]
+    128: [128001, 128002, 128003, 128004, 128005, 128006]
+  validation_seeds_by_n:
+    16: [16011, 16012]
+    64: [64011, 64012]
+    128: [128011, 128012]
+  test_seeds_by_n:
+    16: [16021, 16022, 16023, 16024, 16025]
+    64: [64021, 64022, 64023, 64024, 64025]
+    128: [128021, 128022, 128023, 128024, 128025]
+  train_validation_tasks: [smooth, sparse_pulse, dense_burst]
+  held_out_ood_task: state_switch
+  test_tasks: [smooth, sparse_pulse, dense_burst, state_switch]
+  wp1_seed_reuse: forbidden
+sampling:
+  snapshot_times_seconds: [0.1, 1.1]
+  training_nodes_per_snapshot: 16
+  validation_and_test_nodes: all_nodes_census
+  node_sampling: train_uniform_without_replacement_per_instance_and_snapshot
+  node_sampling_seed: "SHA256(contract_id, N, graph, task, instance_seed, snapshot_time)"
+  tie_break: ascending_node_index
+intervention:
+  estimand: >-
+    Paired do(skip refresh) intervention: from the same oracle state at snapshot
+    time t, hold only candidate node i at its t-state over [t,t+0.02s), while
+    all other states follow the same ODE and exogenous input; release i after
+    0.02s. Compare against the paired no-intervention trajectory.
+  delay_seconds: 0.02
+  output_horizon_seconds: 0.2
+  output_sampling_seconds: 0.01
+  readout: identity_all_node_state
+  label: >-
+    normalized RMS over time and nodes of the paired state-trajectory difference
+    over [t,t+0.2s]; normalization is max(RMS of paired no-intervention output,
+    1e-12). Label generation uses oracle state only offline.
+  oracle_solver: segmented_DOP853
+  oracle_rtol: 1.0e-13
+  oracle_atol: 1.0e-15
+  boundary_semantics: exact exogenous inputs; split integrations at all known discontinuities
+features:
+  availability: >-
+    The state snapshot is read from the frozen v0.3.4i scheduler prediction at t,
+    not from oracle state. Features use frozen parameters, x(t), and x(t-0.02s).
+    The Euler-vs-midpoint local error uses a backward input-slope estimate from
+    those present/past input values; it never queries future input. No intervention
+    label, oracle output difference, or future state is an input feature.
+  candidate: [abs_h, abs_dh_dt, local_truncation_error, weighted_in_strength, weighted_out_strength, neighbor_activity, tau, abs_external_drive]
+  formulas: "abs_h=|h_i|; abs_dh_dt=|f_i(t,h,x_linear)|; local_truncation_error=0.5*delay*|f_mid_i-f0_i| using x(t) plus backward slope from x(t-0.02); weighted_in_strength=sum_j|W_ij|; weighted_out_strength=sum_j|W_ji|; neighbor_activity=sum_j|W_ij||h_j|; tau=tau_i; abs_external_drive=|(U x(t))_i|"
+  cheap_baselines:
+    activity: [abs_h]
+    local_error: [local_truncation_error]
+    degree: [weighted_in_strength, weighted_out_strength]
+    random: deterministic uniform random score; 100 prespecified RNG replicates
+model:
+  algorithm: numpy_ridge_regression
+  target: log1p(continuous_influence_label)
+  standardization: train_split_mean_and_sd_only
+  ridge_alpha_grid: [0.0001, 0.001, 0.01, 0.1, 1.0]
+  selection: highest validation Recall@20%; ties choose larger alpha
+  refit: none; retain train-only fit so validation-fitted probability calibration remains aligned
+metrics:
+  primary: Recall@20% of within-snapshot top-20%-influence nodes on in-distribution test tasks
+  secondary: [NDCG@20%, Spearman_rank_correlation, average_precision, Brier_score_top20_binary, expected_calibration_error_10_equal_count_bins]
+  probability_calibration: "Platt logistic map fitted on validation scores/labels only; apply unchanged to test"
+  ood: state_switch reported separately; no pooled in-distribution/OOD primary
+  cost: [label_generation_wall_seconds, feature_extraction_wall_seconds, scoring_wall_seconds, training_wall_seconds, training_payback_ratio, local_update_savings_ratio]
+  candidate_pool_k: "ceil(0.2 * N) on complete validation/test node populations"
+inference:
+  unit: "complete graph snapshot for validation/test; feature cost includes all-node feature construction"
+  cpu_only: true
+  timing: "paired wall-clock; include feature construction, standardization, model scoring, ranking and deterministic tie-break"
+  break_even: "median predictor cost must be below median wall time of the local updates it would avoid at the same 20% budget"
+statistics:
+  independent_unit: "(population_size, task, input_seed), with graph family and snapshot nested; node interventions are repeated measures"
+  primary_contrast: "candidate Recall@20% minus the strongest single cheap baseline selected on validation only"
+  confidence_interval:
+    method: paired cluster bootstrap over independent units
+    resamples: 10000
+    level: 0.95
+    interval: percentile
+    rng_seed: 88021
+  missing_or_failed_labels: preserve as failures; no imputation; any failed label or missing frozen instance in any split makes WP2 INCONCLUSIVE until repaired under the same contract
+  stopping: run all frozen rows regardless of outcomes; no outcome-based early stopping
+success_gate:
+  prediction: "95% CI lower bound for primary Recall@20% difference > 0"
+  cost: "median paired feature-plus-scoring snapshot cost < median paired saved local-update cost; training fit wall time < total saved local-update cost over the complete in-distribution frozen test set; report label-generation cost separately as offline oracle expense"
+  ood: report separately; OOD failure does not erase in-distribution result but prohibits a generalization claim
+failure_mapping:
+  prediction_or_cost_gate_failed: "WP2 FAIL for an influence-aware predictor claim; do not run WP3 with this predictor"
+  feature_state_accuracy_failed: "WP2 INCONCLUSIVE; candidate state snapshots exceed the already frozen WP1 accuracy bound"
+  numerical_or_label_integrity_failed: "WP2 INCONCLUSIVE; repair implementation without changing estimand, splits, sampling or thresholds, then rerun all rows"
+prohibited:
+  - use of oracle labels or future states at inference
+  - reuse of WP1 seeds
+  - hyperparameter tuning on test rows
+  - treating node interventions or repeated snapshots as independent statistical units
+  - interpreting algorithmic intervention as biological causality or task utility
+  - running WP3/WP4/WP5/WP6 before WP2 report and gate are signed off
