@@ -1,0 +1,8 @@
+{
+  "thresholds": {
+    "P": null,
+    "B2": null
+  },
+  "seed": 8675309,
+  "frozen_before_evaluation": true
+}

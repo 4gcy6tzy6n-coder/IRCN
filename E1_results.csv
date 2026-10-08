@@ -1,0 +1,1 @@
+n,workload,seed,input_sha256,method,repetition,warmup,wall_seconds,process_highwater_rss_bytes,nrmse,max_abs_error,rhs_evaluations,queue_operations,node_refinements,fallbacks

@@ -1,0 +1,36 @@
+{
+  "calibration_run": "e1_20261008_110424",
+  "environment": {
+    "machine": "arm64",
+    "numpy": "2.4.4",
+    "platform": "macOS-26.2-arm64-arm-64bit",
+    "processor": "arm",
+    "python": "3.12.13 (main, Mar  3 2026, 15:35:03) [Clang 21.1.4 ]",
+    "scipy": "1.17.1",
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1"
+    }
+  },
+  "event_trace_count": 711933,
+  "purpose": "representative deterministic calibration trace replay; not E1 and not timed",
+  "replay_script_sha256": "b011bb1aa40e39f7af5f8cf0b148f1b31fe8e5b8540e9972074168babdc587ed",
+  "scope": "N=64, frozen calibration seed=8675309, every frozen workload and both event methods, threshold=lowest pre-registered candidate 1e-5",
+  "source_hashes": {
+    "pyproject.toml": "2c7e341ea12e8aee51e0f5a43db97836ce964ee086aac13c47c5d41296594881",
+    "requirements-lock.txt": "8163914de4e0283b6cb690aa792e9df23efc4a133627b913895541b9c20b827e",
+    "src/ircn/__init__.py": "b8f4f02a6269cc659e0bb80d7ac07fa2a501b801bf049860063ed664a0fd5a7a",
+    "src/ircn/__main__.py": "3129adff95e0f38b87ab34cddfc27082c7892bcaec267ff5d40f160fdf55b44a",
+    "src/ircn/cli.py": "4cd92d5252036a97583621335b930468c7bd7b89ed4c844c1d3936a28a01cd1e",
+    "src/ircn/core.py": "1794ff17c24582beb1ad052d6a2b0202c4eefa740f9f2f838d5d2093130cd006",
+    "src/ircn/experiment.py": "c3c608f5827066e2b83768f54469862ad656a93242f7a6726c61080783e51121",
+    "src/ircn/stats.py": "0d4ea1d4a0dce15852643004ecf899e2bf72a458740d77b5b91dc063dd857062",
+    "tests/test_gates.py": "406e644e6a428fd7716a62763dee556379bb53483031aa59ba74055401f5e101",
+    "tests/test_stats.py": "5b93eaba79b1aecd8c807f3753f64d1db78ca85688832d0125d2939bf8fa12f5"
+  },
+  "trace_bytes_compressed": 10624183,
+  "trace_path": "calibration_event_replay.jsonl.gz",
+  "trace_sha256_compressed": "ba519858087462502a3e80754389df5c08cf288b234418b5c42df1122ba6b0f4",
+  "trace_sha256_uncompressed": "b18b8be436ddfa5f684b80921272fcab8e76fc2ce772868f9669b10ffdc8768f"
+}

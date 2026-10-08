@@ -1,0 +1,14 @@
+{"input_sha256": "3b0eea6dc8c1428b8785717ce23153729e3044829dda9b3b72c8ecb6afe0707f", "method": "P", "n": 64, "node_refinements": 127539, "nrmse": 0.03682533256454979, "threshold": 0.01, "workload": "smooth_periodic"}
+{"input_sha256": "3b0eea6dc8c1428b8785717ce23153729e3044829dda9b3b72c8ecb6afe0707f", "method": "P", "n": 64, "node_refinements": 127719, "nrmse": 0.020014667432593194, "threshold": 0.003, "workload": "smooth_periodic"}
+{"input_sha256": "3b0eea6dc8c1428b8785717ce23153729e3044829dda9b3b72c8ecb6afe0707f", "method": "P", "n": 64, "node_refinements": 127951, "nrmse": 0.007704480011273728, "threshold": 0.001, "workload": "smooth_periodic"}
+{"input_sha256": "3b0eea6dc8c1428b8785717ce23153729e3044829dda9b3b72c8ecb6afe0707f", "method": "P", "n": 64, "node_refinements": 128019, "nrmse": 0.006097507672645192, "threshold": 0.0003, "workload": "smooth_periodic"}
+{"input_sha256": "3b0eea6dc8c1428b8785717ce23153729e3044829dda9b3b72c8ecb6afe0707f", "method": "P", "n": 64, "node_refinements": 132028, "nrmse": 0.0024520627817268452, "threshold": 0.0001, "workload": "smooth_periodic"}
+{"input_sha256": "3b0eea6dc8c1428b8785717ce23153729e3044829dda9b3b72c8ecb6afe0707f", "method": "P", "n": 64, "node_refinements": 163887, "nrmse": 0.0009209867738423663, "threshold": 3e-05, "workload": "smooth_periodic"}
+{"input_sha256": "3b0eea6dc8c1428b8785717ce23153729e3044829dda9b3b72c8ecb6afe0707f", "method": "P", "n": 64, "node_refinements": 286082, "nrmse": 0.0003729200889716091, "threshold": 1e-05, "workload": "smooth_periodic"}
+{"input_sha256": "3b0eea6dc8c1428b8785717ce23153729e3044829dda9b3b72c8ecb6afe0707f", "method": "B2", "n": 64, "node_refinements": 120004, "nrmse": 1.0, "threshold": 0.01, "workload": "smooth_periodic"}
+{"input_sha256": "3b0eea6dc8c1428b8785717ce23153729e3044829dda9b3b72c8ecb6afe0707f", "method": "B2", "n": 64, "node_refinements": 120007, "nrmse": 1.0, "threshold": 0.003, "workload": "smooth_periodic"}
+{"input_sha256": "3b0eea6dc8c1428b8785717ce23153729e3044829dda9b3b72c8ecb6afe0707f", "method": "B2", "n": 64, "node_refinements": 120009, "nrmse": 1.0, "threshold": 0.001, "workload": "smooth_periodic"}
+{"input_sha256": "3b0eea6dc8c1428b8785717ce23153729e3044829dda9b3b72c8ecb6afe0707f", "method": "B2", "n": 64, "node_refinements": 120012, "nrmse": 1.0, "threshold": 0.0003, "workload": "smooth_periodic"}
+{"input_sha256": "3b0eea6dc8c1428b8785717ce23153729e3044829dda9b3b72c8ecb6afe0707f", "method": "B2", "n": 64, "node_refinements": 120013, "nrmse": 1.0, "threshold": 0.0001, "workload": "smooth_periodic"}
+{"input_sha256": "3b0eea6dc8c1428b8785717ce23153729e3044829dda9b3b72c8ecb6afe0707f", "method": "B2", "n": 64, "node_refinements": 120013, "nrmse": 1.0, "threshold": 3e-05, "workload": "smooth_periodic"}
+{"input_sha256": "3b0eea6dc8c1428b8785717ce23153729e3044829dda9b3b72c8ecb6afe0707f", "method": "B2", "n": 64, "node_refinements": 120018, "nrmse": 1.0, "threshold": 1e-05, "workload": "smooth_periodic"}
