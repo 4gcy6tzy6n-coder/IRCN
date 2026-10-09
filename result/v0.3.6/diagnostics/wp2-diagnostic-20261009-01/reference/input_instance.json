@@ -1,0 +1,1 @@
+{"duration_seconds":2.0,"graph":"chain","input_trace_sha256":"a55f44a76d84b707b52450c3e771119fc700fe164928ac8bc37fbaaa925f211b","instance_sha256":"eaa995ee7f17de7e91d64feb7fd342a77c8ccbc0a385fb47a303ad7c876cf7c0","n":128,"sample_dt_seconds":0.01,"seed":128012,"split":"validation","task":"dense_burst"}

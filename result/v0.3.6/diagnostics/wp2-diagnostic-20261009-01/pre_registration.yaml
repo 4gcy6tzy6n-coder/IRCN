@@ -1,0 +1,254 @@
+contract_id: IRCN-v0.3.6-WP2-single-failure-diagnostic-v1
+status: FROZEN_V1_AFTER_INDEPENDENT_PROTOCOL_ACCEPT
+normative_protocol: model/v0.3.6/DIAGNOSTIC_PROTOCOL_v1.md
+parent_decision: WP2_INCONCLUSIVE_WP3_BLOCKED
+purpose: >-
+  Diagnose the single frozen validation instance whose v0.3.5 candidate full-trace
+  accuracy exceeded its inherited WP1 bound. This is a nonconfirmatory root-cause
+  diagnostic, not a repair search or a new WP2 result.
+claim_boundary: >-
+  Results may identify implementation sensitivity on this one instance only.
+  They cannot change the WP2 gate, establish predictor validity, authorize WP3,
+  establish speed, or support biological/causal/task-utility claims.
+immutability:
+  parent_wp2_contract: result/v0.3.5/WP2/V03_WP2_INFLUENCE_v1.yaml
+  parent_wp2_contract_sha256: f81da88afa5bc6d3a5ae204132f7afa74b32a00afdf7ecc6a1e2fc0f43574328
+  parent_raw_labels_path: result/v0.3.5/WP2/run_v1/labels_raw.jsonl
+  parent_raw_labels_sha256: 683b3fb5182dc86420ba9f1a545344bc33b685f9bd20732eb404b37d4d758ed9
+  parent_instances_path: result/v0.3.5/WP2/run_v1/instances.jsonl
+  parent_instances_sha256: 85a2af8334992fdd360429780dbcc134cb9267ed6ec39cf9fb91a4c83141a20e
+  candidate_scheduler_path: model/v0.3.5/src/events/ode_segment_scheduler.py
+  candidate_scheduler_sha256: 67df7cfb70c734db0dfb6833148cac4545d78fdfaf5a17770deb222fab420a3d
+  source_snapshot: model/v0.3.5/
+  source_manifest: result/v0.3.5/SHA256SUMS.csv
+  source_manifest_sha256: ec43221c726d560a6c4f85c2d85d395b95d8c855f64e8323178f19329fda686c
+  required_parent_manifest_matches: 96
+  required_parent_manifest_mismatches: 0
+instance:
+  split: validation
+  graph: chain
+  population_size: 128
+  task: dense_burst
+  seed: 128012
+  duration_seconds: 2.0
+  sample_dt_seconds: 0.01
+  expected_input_trace_sha256: a55f44a76d84b707b52450c3e771119fc700fe164928ac8bc37fbaaa925f211b
+  expected_candidate_nrmse: 0.00864007689194927
+  expected_candidate_max_abs_error: 0.006075382462433044
+  expected_counters:
+    event_count: 54752
+    message_deliveries: 13834
+    queue_pushes: 40818
+    rhs_evaluations: 506341
+    output_materializations: 25728
+  reproduction_tolerances:
+    nrmse_absolute: 1.0e-12
+    max_abs_absolute: 1.0e-12
+  accuracy_limit_from_parent_contract: 6.837551017609374e-08
+  mismatch_action: >-
+    If instance identity or input hash does not match, stop without running any
+    candidate variant and record BLOCKED; do not reconstruct or substitute data.
+source_hashes:
+  model/v0.3.5/src/dynamics/graphs.py: fb04794c510bc5d2511b8ec46540da1433767a91bb2dd15efd47dbbaa5341ddf
+  model/v0.3.5/src/dynamics/system.py: c502048f75b146b50bc65afd374e2d574f349eb45f6e17a8ee40f0993894131d
+  model/v0.3.5/src/dynamics/tasks.py: bfa5d2b331f97e70541eebc8ba124548794d2cb4f45b3cd609a70970c5a486af
+  model/v0.3.5/src/events/inputs.py: eecd35cd0a78d2f14428a42a451d41e1fb1aed5a78a27f61bcb6de189e0c15ff
+  model/v0.3.5/src/events/ode_segment_scheduler.py: 67df7cfb70c734db0dfb6833148cac4545d78fdfaf5a17770deb222fab420a3d
+  model/v0.3.5/src/solvers/oracle.py: 9ebea48726cded0ce84b867bfb735c9fbae47aceb321b489c056625fab3d3019
+  model/v0.3.5/experiments/WP2/generate_labels.py: a4d4390180f5ab73a4e049108fa785ea4337c225735e59178a78bebef10fbc19
+  model/v0.3.5/contracts/V03_WP2_INFLUENCE_v1.yaml: f81da88afa5bc6d3a5ae204132f7afa74b32a00afdf7ecc6a1e2fc0f43574328
+diagnostic_matrix:
+  candidate_common:
+    segment_tolerance: 1.0e-7
+    max_interval_seconds: 0.02
+    input_mode: exact_exogenous
+  variants:
+    - id: frozen_baseline_repeat_1
+      delivery_mode: broadcast_batch
+      local_batch: true
+      local_batch_size: 2
+      local_rtol: 1.0e-9
+      local_atol: 1.0e-11
+    - id: frozen_baseline_repeat_2
+      repeat_of: frozen_baseline_repeat_1
+    - id: edge_delivery_batch2
+      delivery_mode: edge_messages
+      local_batch: true
+      local_batch_size: 2
+      local_rtol: 1.0e-9
+      local_atol: 1.0e-11
+    - id: broadcast_delivery_scalar
+      delivery_mode: broadcast_batch
+      local_batch: false
+      local_batch_size: null
+      local_rtol: 1.0e-9
+      local_atol: 1.0e-11
+    - id: edge_delivery_scalar
+      delivery_mode: edge_messages
+      local_batch: false
+      local_batch_size: null
+      local_rtol: 1.0e-9
+      local_atol: 1.0e-11
+    - id: tighter_local_tolerance
+      delivery_mode: broadcast_batch
+      local_batch: true
+      local_batch_size: 2
+      local_rtol: 1.0e-11
+      local_atol: 1.0e-13
+    - id: tighter_segment_tolerance
+      delivery_mode: broadcast_batch
+      local_batch: true
+      local_batch_size: 2
+      local_rtol: 1.0e-9
+      local_atol: 1.0e-11
+      segment_tolerance: 1.0e-8
+      max_interval_seconds: 0.02
+  oracle:
+    method: DOP853
+    rtol: 1.0e-13
+    atol: 1.0e-15
+    discontinuities: split_at_all_declared_input_breakpoints
+  independent_oracle_check:
+    method: manual_full_state_RK4
+    rhs_implementation: independent_of_System.rhs_and_solve_ivp
+    step_sizes_seconds: [0.001, 0.0005]
+    enforce_left_limit_at_input_breakpoints: true
+    refinement_pair_limits:
+      max_abs: 1.0e-9
+      nrmse: 1.0e-9
+      require_both_reference_directions: true
+    each_refinement_vs_dop853_limits:
+      max_abs: 1.0e-8
+      nrmse: 1.0e-8
+      require_both_reference_directions: true
+    compare_each_refinement_to_DOP853: true
+    rhs_convention: W[target,source]; f(h,x)=(-h+tanh(W@h+U@x+b))/tau
+    initial_state: all_zeros
+    breakpoint_rule: >-
+      boundaries_are_union_of_start_end_all_input_breakpoints_and_all_sample_times;
+      no_step_crosses_boundary; shorten_to_endpoint; record_only_step_endpoint_without_interpolation;
+      at_shared_sample_breakpoint_record_continuous_state_once_after_left_limit_step_then_restart_with_right_continuous_input
+    left_limit_epsilon_seconds: 1.0e-9
+  fixed_factors:
+    graph_task_seed_weights_input_duration_sampling_and_initial_state: unchanged
+    max_interval_seconds: unchanged_in_all_candidate_variants
+    no_threshold_search: true
+    no_candidate_retraining: true
+    no_full_wp2_rerun: true
+analysis:
+  reference_nrmse:
+    formula: sqrt(mean((candidate-reference)^2))/max(sqrt(mean(reference^2)),1.0e-12)
+    aggregation: all_201_time_samples_times_128_nodes
+  per_sample_nrmse:
+    formula: sqrt(mean_node((candidate-reference)^2))/max(sqrt(mean_node(reference^2)),1.0e-12)
+    zero_denominator_rule: use_1.0e-12_floor
+  pairwise_trajectory_nrmse:
+    formula: sqrt(mean((candidate_a-candidate_b)^2))/max(sqrt(mean(candidate_b^2)),1.0e-12)
+    report_both_directions: true
+  max_error_tie_break: earliest_sample_time_then_smallest_node_index
+  per_variant_outputs:
+    - full_state_trajectory
+    - candidate_vs_DOP853_NRMSE_and_max_abs
+    - candidate_vs_each_RK4_refinement_error
+    - per_sample_time_NRMSE
+    - max_error_time_and_node
+    - deterministic_event_and_RHS_counters
+    - input_and_instance_hashes
+  mode_equivalence_limit_max_abs: 1.0e-8
+  mode_equivalence_limit_nrmse: 1.0e-8
+  preregistered_contrasts:
+    - [frozen_baseline_repeat_1, edge_delivery_batch2]
+    - [broadcast_delivery_scalar, edge_delivery_scalar]
+    - [frozen_baseline_repeat_1, broadcast_delivery_scalar]
+    - [edge_delivery_batch2, edge_delivery_scalar]
+  interaction_effect: (error_edge_batch2-error_broadcast_batch2)-(error_edge_scalar-error_broadcast_scalar); report for both NRMSE and max_abs
+  tighter_local_tolerance_error_reduction_minimum_fold: 10
+  outputs:
+    array_format: npy
+    dtype: float64
+    trajectory_shape: [201, 128]
+    canonical_jsonl: UTF-8_one_sorted_key_JSON_object_per_line
+    unique_run_id: required_refuse_overwrite
+    persist_resolved_config_for_every_variant: true
+    persist_failure_record_on_any_exception_or_timeout: true
+    semantic_hash:
+      algorithm: SHA-256
+      calculation_timing: postrun_archival_phase_after_all_variants_analysis_and_failures
+      schema_id: ircn-v036-semantic-output-v1
+      component_order: header_trajectory_event_jsonl_counters_resolved_config
+      component_length_prefix: unsigned_64_bit_little_endian
+      trajectory_encoding: C_contiguous_little_endian_float64
+      event_encoding: canonical_jsonl_UTF8_exactly_one_final_LF
+      canonical_json: sorted_keys_compact_separators_no_NaN
+      resolved_config_component: normalized_computational_config
+      normalized_config_exclusions: id_variant_id_repeat_of_run_id_paths_timestamps
+      include: trajectory_bytes_event_jsonl_bytes_deterministic_counters_normalized_computational_config
+      exclude: wall_clock_paths_timestamps_stdout_stderr
+    full_run_config_hash:
+      algorithm: SHA-256
+      input: complete_resolved_config_including_variant_and_run_identity
+    normalized_computational_config_hash:
+      algorithm: SHA-256
+      input: normalized_computational_config
+  timeout_seconds:
+    candidate_variant: 300
+    dop853_oracle: 300
+    each_rk4_refinement: 600
+  interpretation:
+    - >-
+      If the reproduced frozen baseline does not match the frozen input hash,
+      exact counters, repeated semantic hash, or frozen accuracy values within
+      the explicit tolerances in this contract, stop attribution and retain WP2
+      as INCONCLUSIVE.
+    - >-
+      If both RK4 refinements agree within the frozen 1.0e-9 refinement bound
+      and each agrees with DOP853 within both frozen 1.0e-8 oracle-check bounds,
+      treat the reference trajectory as independently corroborated for this diagnostic.
+    - >-
+      If edge/broadcast variants exceed the mode-equivalence limit, investigate
+      delivery-order semantics; this is a localized implementation finding.
+    - >-
+      If scalar/batch variants exceed the mode-equivalence limit, investigate
+      vector error control or batch coupling; this is a localized implementation finding.
+    - >-
+      If tighter local tolerances reduce candidate-versus-DOP853 NRMSE by at
+      least 10x, record local integration tolerance sensitivity; this is not a
+      repair or pass.
+    - >-
+      If none of these factors explains the discrepancy, report root cause
+      unresolved; do not test additional parameter values in this contract.
+provenance_audit:
+  note: >-
+    The parent labels manifest and analysis execution manifest list different
+    hashes for analyze_labels.py and run_experiment.py. The analysis execution
+    manifest matches the saved analysis output and its listed source files;
+    the labels manifest's generation code and raw label hashes match. Record
+    this discrepancy as a reporting limitation and do not modify either parent
+    manifest or analysis output.
+required_gates:
+  - pre-run independent review of this contract
+  - runner and independent oracle implemented and focused tests pass
+  - independent pre-run code defect review accepts with no Blocker or Major findings
+  - review receipt binds exact runner, test, contract, and protocol SHA-256 values
+  - source and parent manifest hash verification
+  - generated input trace fingerprint verification before experimental clock starts
+  - no experiment-output hashing while variants are running; archive only after all variants and analysis finish
+  - preserve all output arrays, event JSONL, command logs, failures, and hashes
+  - independent post-run code and result review before completion package
+environment:
+  python: 3.12.13
+  numpy: 2.4.4
+  scipy: 1.17.1
+  platform: macOS-26.2-arm64-arm-64bit
+  architecture: arm64
+  dependency_lock: model/v0.3.5/requirements.lock
+  dependency_lock_sha256: aec9b63eedbf45049184e7eed8a0edace68ac30c3ecb85ccbba58f4decb0230c
+  cpu_only: true
+  cpu_thread_environment:
+    OPENBLAS_NUM_THREADS: "1"
+    OMP_NUM_THREADS: "1"
+    VECLIB_MAXIMUM_THREADS: "1"
+downstream:
+  parent_wp2_status: remains_INCONCLUSIVE_regardless_of_diagnostic_outcome
+  wp3_wp6: remain_BLOCKED
+  confirmatory_repair: requires_new_contract_and_independent_review
