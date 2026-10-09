@@ -2,6 +2,7 @@ from types import SimpleNamespace
 
 import numpy as np
 
+import audit_runner
 from audit_runner import (REVIEWED_FILES, check_terminal_locality, corrected_rk4,
                           error_metrics, frozen_breakpoints, terminal_jump,
                           validate_review_receipt, write_failed_status)
@@ -133,3 +134,33 @@ def test_execution_failure_is_preserved_with_failure_and_atomic_status(tmp_path)
     assert failure["status"] == status["status"] == "FAILED_PRESERVED"
     assert status["partial_outputs_preserved"]
     assert not (tmp_path / "status.json.tmp").exists()
+
+
+def test_run_checks_clean_tree_before_creating_output_or_logs(tmp_path, monkeypatch):
+    repository = tmp_path / "repo"
+    repository.mkdir()
+    output = repository / "result/v0.3.7/audit"
+    receipt_path = tmp_path / "receipt.json"
+    receipt_path.write_text(json.dumps({"status": "ACCEPT", "reviewer": "reviewer",
+        "reviewed_commit": "commit-123", "reviewed_files": sorted(REVIEWED_FILES)}), encoding="utf-8")
+    monkeypatch.setattr(audit_runner, "REPO", repository)
+    monkeypatch.setattr(audit_runner, "OUT", output)
+    calls = []
+
+    def fake_git(args, **kwargs):
+        if args[1] == "rev-parse":
+            return type("Completed", (), {"stdout": "commit-123\n"})()
+        calls.append(("status", output.exists()))
+        return type("Completed", (), {"stdout": ""})()
+
+    def fail_after_preflight(*args):
+        assert output.exists()
+        assert (output / "stdout.log").is_file()
+        raise RuntimeError("stop after preflight test")
+
+    monkeypatch.setattr(audit_runner.subprocess, "run", fake_git)
+    monkeypatch.setattr(audit_runner, "_run_impl", fail_after_preflight)
+    result = audit_runner.run("rk4-endpoint-audit-20261009-01", receipt_path)
+    assert calls == [("status", False)]
+    assert result == 1
+    assert json.loads((output / "status.json").read_text())["status"] == "FAILED_PRESERVED"

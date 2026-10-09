@@ -183,17 +183,6 @@ def _run_impl(audit_id: str, receipt_path: Path) -> int:
     started = datetime.now(timezone.utc).isoformat()
     try:
         contract = yaml.safe_load(CONTRACT_PATH.read_text(encoding="utf-8"))
-        # Integrity hashing is intentionally deferred until all numerical work
-        # and reports have been written, per the current project instruction.
-        if not receipt_path.is_file():
-            raise RuntimeError("independent code review receipt is required")
-        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
-        current_commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=REPO,
-                                        check=True, capture_output=True, text=True).stdout.strip()
-        tree_clean = not subprocess.run(["git", "status", "--porcelain", "--untracked-files=all"],
-                                        cwd=REPO, check=True, capture_output=True,
-                                        text=True).stdout.strip()
-        validate_review_receipt(receipt, current_commit, tree_clean)
         parent_meta = json.loads((PARENT / "run_metadata.json").read_text(encoding="utf-8"))
         if (sys.version.split()[0] != parent_meta["python"].split()[0]
                 or np.__version__ != parent_meta["numpy"] or scipy.__version__ != parent_meta["scipy"]
@@ -315,6 +304,19 @@ def _run_impl(audit_id: str, receipt_path: Path) -> int:
 def run(audit_id: str, receipt_path: Path) -> int:
     if OUT.exists():
         raise RuntimeError(f"output path already exists; preserving prior run: {OUT}")
+    try:
+        if not receipt_path.is_file():
+            raise RuntimeError("independent code review receipt is required")
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        current_commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=REPO,
+                                        check=True, capture_output=True, text=True).stdout.strip()
+        tree_clean = not subprocess.run(["git", "status", "--porcelain", "--untracked-files=all"],
+                                        cwd=REPO, check=True, capture_output=True,
+                                        text=True).stdout.strip()
+        validate_review_receipt(receipt, current_commit, tree_clean)
+    except Exception as exc:
+        write_failed_status(OUT, exc, traceback.format_exc())
+        return 1
     OUT.mkdir(parents=True, exist_ok=False)
     try:
         with (OUT / "stdout.log").open("w", encoding="utf-8") as stdout_file, \

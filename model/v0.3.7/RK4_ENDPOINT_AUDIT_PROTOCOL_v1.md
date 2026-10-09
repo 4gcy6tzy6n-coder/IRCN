@@ -2,7 +2,7 @@
 
 **Status:** draft pending independent review. The contract and protocol are jointly normative. No audit run may start until an independent reviewer accepts the contract, protocol, runner, and tests. Hash calculation is deferred until the experiment and report are complete.
 
-The accepted receipt must name the reviewed Git commit, reviewer, and exact five-file scope (contract, protocol, runner, tests, and post-report archive utility). Before execution, the runner verifies that commit identity, that scope, and a clean worktree; these checks use Git metadata and do not calculate experiment hashes. Execution exceptions preserve partial outputs with a failure record and atomic FAILED_PRESERVED status; an existing audit directory is never overwritten or rerun.
+The accepted receipt must name the reviewed Git commit, reviewer, and exact five-file scope (contract, protocol, runner, tests, and post-report archive utility). Before creating the output directory or logs, the runner verifies that commit identity, that scope, and a clean worktree; these checks use Git metadata and do not calculate experiment hashes. Execution exceptions preserve partial outputs with a failure record and atomic FAILED_PRESERVED status; an existing audit directory is never overwritten or rerun.
 
 ## Scope
 
