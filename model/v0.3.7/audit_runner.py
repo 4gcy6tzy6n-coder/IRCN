@@ -2,10 +2,12 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import csv
 import json
 import os
 import platform
+import shlex
 import subprocess
 import sys
 import time
@@ -178,7 +180,6 @@ def _run_impl(audit_id: str, receipt_path: Path) -> int:
     if audit_id != "rk4-endpoint-audit-20261009-01":
         raise ValueError("audit_id must match the frozen contract")
     out = OUT
-    out.mkdir(parents=True, exist_ok=False)
     started = datetime.now(timezone.utc).isoformat()
     try:
         contract = yaml.safe_load(CONTRACT_PATH.read_text(encoding="utf-8"))
@@ -299,7 +300,10 @@ def _run_impl(audit_id: str, receipt_path: Path) -> int:
                                ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "VECLIB_MAXIMUM_THREADS")},
         "parent_manifest_sha256_expected": contract["parent_run"]["output_manifest_sha256"],
         "review_receipt": str(receipt_path),
+        "argv": sys.argv,
+        "command": shlex.join(sys.argv),
         "candidate_solver_reruns": 0}
+    (out / "command.log").write_text(metadata["command"] + "\n", encoding="utf-8")
     (out / "run_metadata.json").write_bytes(canonical_json(metadata) + b"\n")
     audit_status = "COMPLETED_AUDIT" if refinement_pass and dop_pass and locality_pass else "COMPLETED_WITH_UNRESOLVED_CHECKS"
     (out / "status.json").write_bytes(canonical_json({"status": audit_status, "started_utc": started,
@@ -311,8 +315,12 @@ def _run_impl(audit_id: str, receipt_path: Path) -> int:
 def run(audit_id: str, receipt_path: Path) -> int:
     if OUT.exists():
         raise RuntimeError(f"output path already exists; preserving prior run: {OUT}")
+    OUT.mkdir(parents=True, exist_ok=False)
     try:
-        return _run_impl(audit_id, receipt_path)
+        with (OUT / "stdout.log").open("w", encoding="utf-8") as stdout_file, \
+             (OUT / "stderr.log").open("w", encoding="utf-8") as stderr_file, \
+             contextlib.redirect_stdout(stdout_file), contextlib.redirect_stderr(stderr_file):
+            return _run_impl(audit_id, receipt_path)
     except Exception as exc:
         write_failed_status(OUT, exc, traceback.format_exc())
         return 1

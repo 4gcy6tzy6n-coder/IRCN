@@ -18,7 +18,8 @@ REQUIRED_OUTPUTS = ["contract.yaml", "protocol.md", "review_receipt.json",
                     "parent_contract.yaml", "parent_run_metadata.json",
                     "parent_output_hash_manifest.json", "parent_status.json",
                     "input_trace.npy", "corrected_rk4_coarse.npy", "corrected_rk4_fine.npy",
-                    "audit_results.json", "candidate_reference_comparisons.csv", "run_metadata.json"]
+                    "audit_results.json", "candidate_reference_comparisons.csv", "run_metadata.json",
+                    "command.log", "stdout.log", "stderr.log"]
 
 
 def sha256(path: Path) -> str:
@@ -30,7 +31,20 @@ def canonical(value) -> bytes:
                         ensure_ascii=False, allow_nan=False) + "\n").encode()
 
 
-def validate_outputs(out: Path, report: Path) -> None:
+def ensure_clean_execution_sources(source_paths, dirty_paths) -> None:
+    dirty = set(source_paths) & set(dirty_paths)
+    if dirty:
+        raise RuntimeError(f"execution sources changed after review/run: {sorted(dirty)}")
+
+
+def validate_parent_status(status: dict, expected_manifest_digest: str) -> None:
+    if (status.get("status") != "COMPLETED_DIAGNOSTIC"
+            or status.get("archive_revision") != 3
+            or status.get("output_hash_manifest_sha256") != expected_manifest_digest):
+        raise RuntimeError("parent status does not match frozen completion and manifest digest")
+
+
+def validate_outputs(out: Path, report: Path, contract: dict) -> None:
     missing = [name for name in REQUIRED_OUTPUTS if not (out / name).is_file()]
     if missing:
         raise RuntimeError(f"required audit outputs missing: {missing}")
@@ -42,25 +56,26 @@ def validate_outputs(out: Path, report: Path) -> None:
     coarse = arrays["corrected_rk4_coarse.npy"]
     fine = arrays["corrected_rk4_fine.npy"]
     trace = arrays["input_trace.npy"]
-    if coarse.ndim != 2 or coarse.shape != fine.shape or coarse.shape[0] != trace.shape[0]:
-        raise RuntimeError("audit arrays have incompatible dimensions")
+    instance = contract["parent_run"]["frozen_instance"]
+    rows = round(instance["duration_seconds"] / instance["sample_dt_seconds"]) + 1
+    expected_shape = (rows, instance["population_size"])
+    if coarse.shape != expected_shape or fine.shape != expected_shape or trace.shape != expected_shape:
+        raise RuntimeError(f"audit arrays must all have frozen shape {expected_shape}")
     for name, array in arrays.items():
         if not np.all(np.isfinite(array)):
             raise RuntimeError(f"non-finite values in {name}")
     parent_status = json.loads((out / "parent_status.json").read_text(encoding="utf-8"))
-    if (parent_status.get("status") != "COMPLETED_DIAGNOSTIC"
-            or parent_status.get("archive_revision") != 3):
-        raise RuntimeError("frozen parent status is not the expected completed revision")
+    validate_parent_status(parent_status, contract["parent_run"]["output_manifest_sha256"])
 
 
 def _archive() -> dict:
     if not REPORT.is_file() or not (OUT / "audit_results.json").is_file():
         raise SystemExit("refusing to hash: complete numerical outputs and E0_report.md are required")
-    validate_outputs(OUT, REPORT)
+    contract = yaml.safe_load(CONTRACT.read_text(encoding="utf-8"))
+    validate_outputs(OUT, REPORT, contract)
     status_before = json.loads((OUT / "status.json").read_text(encoding="utf-8"))
     if not str(status_before.get("status", "")).startswith("COMPLETED"):
         raise SystemExit("refusing to hash: audit status is not completed")
-    contract = yaml.safe_load(CONTRACT.read_text(encoding="utf-8"))
     metadata = json.loads((OUT / "run_metadata.json").read_text(encoding="utf-8"))
     receipt = json.loads((OUT / "review_receipt.json").read_text(encoding="utf-8"))
     current_commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=REPO,
@@ -70,9 +85,14 @@ def _archive() -> dict:
     reviewed_paths = ("model/v0.3.7/RK4_ENDPOINT_AUDIT_CONTRACT_v1.yaml",
          "model/v0.3.7/RK4_ENDPOINT_AUDIT_PROTOCOL_v1.md",
          "model/v0.3.7/audit_runner.py", "model/v0.3.7/test_audit.py",
-         "model/v0.3.7/archive_after_completion.py")
-    subprocess.run(["git", "diff", "--quiet", "HEAD", "--", *reviewed_paths],
-                   cwd=REPO, check=True)
+         "model/v0.3.7/archive_after_completion.py",
+         "model/v0.3.5/src/dynamics/tasks.py", "model/v0.3.5/src/dynamics/graphs.py",
+         "model/v0.3.5/src/dynamics/system.py", "model/v0.3.5/src/events/inputs.py",
+         "model/v0.3.5/requirements.lock")
+    dirty_output = subprocess.run(["git", "status", "--porcelain", "--", *reviewed_paths],
+                                  cwd=REPO, check=True, capture_output=True, text=True).stdout
+    dirty_paths = [line[3:] for line in dirty_output.splitlines()]
+    ensure_clean_execution_sources(reviewed_paths, dirty_paths)
     parent_manifest_path = PARENT / "output_hash_manifest.json"
     if (OUT / "parent_status.json").read_bytes() != (PARENT / "status.json").read_bytes():
         raise RuntimeError("frozen parent status changed after audit execution")
@@ -105,7 +125,11 @@ def _archive() -> dict:
     sources = [CONTRACT, REPO / "model/v0.3.7/RK4_ENDPOINT_AUDIT_PROTOCOL_v1.md",
                REPO / "model/v0.3.7/audit_runner.py", REPO / "model/v0.3.7/test_audit.py",
                REPO / "model/v0.3.5/src/dynamics/tasks.py",
-               REPO / "model/v0.3.5/src/events/inputs.py", Path(__file__)]
+               REPO / "model/v0.3.5/src/dynamics/graphs.py",
+               REPO / "model/v0.3.5/src/dynamics/system.py",
+               REPO / "model/v0.3.5/src/events/inputs.py",
+               REPO / "model/v0.3.5/requirements.lock",
+               REPO / "model/v0.3.7/archive_after_completion.py"]
     source_hashes = {str(path.relative_to(REPO)): sha256(path) for path in sources}
     input_hashes = {f"parent/{relative}": expected
                     for relative, expected in parent_manifest["files"].items()}

@@ -5,7 +5,9 @@ import numpy as np
 from audit_runner import (REVIEWED_FILES, check_terminal_locality, corrected_rk4,
                           error_metrics, frozen_breakpoints, terminal_jump,
                           validate_review_receipt, write_failed_status)
-from archive_after_completion import validate_outputs
+from archive_after_completion import (REQUIRED_OUTPUTS, ensure_clean_execution_sources,
+                                      validate_outputs, validate_parent_status)
+import json
 
 
 class Input:
@@ -91,14 +93,43 @@ def test_post_report_archive_rejects_missing_outputs_and_nonconditional_report(t
     report = tmp_path / "E0_report.md"
     report.write_text("PENDING_POST_REPORT_ARCHIVE", encoding="utf-8")
     with np.testing.assert_raises(RuntimeError):
-        validate_outputs(tmp_path, report)
+        validate_outputs(tmp_path, report, {"parent_run": {"frozen_instance": {}}})
+
+
+def test_archive_rejects_dirty_execution_dependency():
+    with np.testing.assert_raises(RuntimeError):
+        ensure_clean_execution_sources(["model/v0.3.5/src/events/inputs.py"],
+                                       ["model/v0.3.5/src/events/inputs.py"])
+
+
+def test_archive_rejects_parent_status_manifest_digest_mismatch():
+    status = {"status": "COMPLETED_DIAGNOSTIC", "archive_revision": 3,
+              "output_hash_manifest_sha256": "wrong"}
+    with np.testing.assert_raises(RuntimeError):
+        validate_parent_status(status, "frozen")
+
+
+def test_archive_rejects_wrong_frozen_array_shape(tmp_path):
+    for name in REQUIRED_OUTPUTS:
+        (tmp_path / name).write_text("placeholder", encoding="utf-8")
+    np.save(tmp_path / "corrected_rk4_coarse.npy", np.zeros((201, 127)))
+    np.save(tmp_path / "corrected_rk4_fine.npy", np.zeros((201, 127)))
+    np.save(tmp_path / "input_trace.npy", np.zeros((201, 127)))
+    (tmp_path / "parent_status.json").write_text(
+        json.dumps({"status": "COMPLETED_DIAGNOSTIC", "archive_revision": 3}), encoding="utf-8")
+    report = tmp_path / "E0_report.md"
+    report.write_text("PENDING_POST_REPORT_ARCHIVE", encoding="utf-8")
+    contract = {"parent_run": {"frozen_instance": {
+        "duration_seconds": 2.0, "sample_dt_seconds": 0.01, "population_size": 128}}}
+    with np.testing.assert_raises(RuntimeError):
+        validate_outputs(tmp_path, report, contract)
 
 
 def test_execution_failure_is_preserved_with_failure_and_atomic_status(tmp_path):
     error = RuntimeError("synthetic failure")
     write_failed_status(tmp_path, error, "trace")
-    failure = __import__("json").loads((tmp_path / "failure.json").read_text())
-    status = __import__("json").loads((tmp_path / "status.json").read_text())
+    failure = json.loads((tmp_path / "failure.json").read_text())
+    status = json.loads((tmp_path / "status.json").read_text())
     assert failure["status"] == status["status"] == "FAILED_PRESERVED"
     assert status["partial_outputs_preserved"]
     assert not (tmp_path / "status.json.tmp").exists()
