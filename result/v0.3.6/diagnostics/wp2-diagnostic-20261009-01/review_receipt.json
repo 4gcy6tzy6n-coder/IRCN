@@ -1,0 +1,9 @@
+{
+  "status": "ACCEPT",
+  "files_sha256": {
+    "runner": "db5a6a56c7ea309f2c5f21540859a468de6cf6aac867ddae3806883b37c3c28e",
+    "tests": "217cfb50709fa69a21ce811d1b1fab002408711b381913e889f2368a0146d28f",
+    "contract": "83f553ebc55d7836963a893564be5bbd96ecef6a8fd4ac443a73bf110d48cbf6",
+    "protocol": "773039049ff848bd66f7d72f0175fc795ddf9149325bd15e015195a59342b1b9"
+  }
+}

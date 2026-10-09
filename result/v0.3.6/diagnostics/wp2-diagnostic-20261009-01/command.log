@@ -1,0 +1,1 @@
+{"argv":["/Users/yyl/.local/share/uv/python/cpython-3.12-macos-aarch64-none/bin/python","model/v0.3.6/diagnostic_runner.py","--run-id","wp2-diagnostic-20261009-01","--review-receipt","/private/tmp/ircn-v036-review-receipt.json"],"cwd":"/private/tmp/ircn-v036-wp2-diagnostic","started_utc":"2026-10-09T03:37:12.455263+00:00"}
