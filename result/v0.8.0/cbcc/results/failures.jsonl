@@ -1,0 +1,1 @@
+{"phase":"preflight_smoke","status":"FAILED","cause":"JSONL serialization rejected numpy.int64 event field","follow_up":"serializer now converts numpy scalar values; preserve this entry as failed smoke evidence"}

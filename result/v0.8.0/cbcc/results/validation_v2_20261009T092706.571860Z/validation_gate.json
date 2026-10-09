@@ -1,0 +1,12 @@
+{
+  "sparse_key": {
+    "full_update_mse": 0.010233773539118338,
+    "zero_output_mse": 0.011305724828475795,
+    "eligible": true
+  },
+  "feedback_switch": {
+    "full_update_mse": 0.019627089228933726,
+    "zero_output_mse": 0.026394435427582935,
+    "eligible": true
+  }
+}
