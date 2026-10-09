@@ -1,0 +1,91 @@
+contract_id: IRCN-v0.3.7-WP2-RK4-terminal-discontinuity-audit-v1
+status: DRAFT_PENDING_INDEPENDENT_REVIEW
+purpose: >-
+  Independently audit the v0.3.6 RK4/DOP853 disagreement after a post-run
+  forensic calculation localized the full difference to the terminal input
+  discontinuity. This audit corrects only the reference harness and re-evaluates
+  frozen candidate trajectories; it does not rerun candidate solvers or alter
+  the v0.3.6 result.
+claim_boundary: >-
+  Single frozen-instance numerical implementation audit only. It cannot change
+  WP2 INCONCLUSIVE, authorize WP3-WP6 or E2, establish efficiency, or support
+  task utility, biological, or causal claims.
+parent_run:
+  path: result/v0.3.6/diagnostics/wp2-diagnostic-20261009-01
+  status: COMPLETED_DIAGNOSTIC
+  output_manifest_sha256: 9e45d4c8cabcf0e9951f9a7bd007361788c5e6a6f7885ea1bad4a0c7925bbfb1
+  frozen_instance:
+    split: validation
+    graph: chain
+    population_size: 128
+    task: dense_burst
+    seed: 128012
+    duration_seconds: 2.0
+    sample_dt_seconds: 0.01
+question: >-
+  Does explicitly treating a terminal input jump as a left-limit integration
+  boundary eliminate the frozen RK4/DOP853 discrepancy, and do the corrected
+  independent RK4 refinements corroborate the existing DOP853 trajectory under
+  the unchanged v0.3.6 limits?
+method:
+  preserve_parent_artifacts: true
+  candidate_solver_reruns: 0
+  read_only_inputs:
+    - reference/input_trace.npy
+    - reference/oracle_dop853.npy
+    - reference/oracle_rk4_001.npy
+    - reference/oracle_rk4_0005.npy
+    - all seven frozen candidate trajectory.npy arrays
+  corrected_independent_rk4:
+    rhs: '(-h + tanh(W @ h + U @ x(t) + b)) / tau'
+    rhs_implementation: direct matrix expression; no System.rhs, solve_ivp, or prior RK4 helper
+    step_sizes_seconds: [0.001, 0.0005]
+    boundaries: start_end_all_declared_breakpoints_all_frozen_sample_times
+    no_interpolation: true
+    terminal_discontinuity_rule: >-
+      Compare input increments over [t_end-2epsilon,t_end-epsilon] and
+      [t_end-epsilon,t_end], with epsilon 1e-9 seconds. Classify a component
+      as a terminal jump only when its final increment exceeds both eight
+      times its preceding increment and a 64-epsilon floating-point scale
+      floor. If any component qualifies, include t_end in the discontinuity
+      set and evaluate the final RK4 stage with the left-limit input; record
+      the continuous state at t_end.
+    all_other_rules: unchanged_from_parent_protocol
+  candidate_evaluation:
+    use_saved_candidate_trajectories_only: true
+    compare_to_corrected_rk4_coarse_and_fine: true
+    variants: [frozen_baseline_repeat_1, frozen_baseline_repeat_2, edge_delivery_batch2, broadcast_delivery_scalar, edge_delivery_scalar, tighter_local_tolerance, tighter_segment_tolerance]
+    no_new_candidate_parameters_or_runs: true
+criteria:
+  rk4_refinement:
+    max_abs: 1.0e-9
+    both_direction_nrmse: 1.0e-9
+  each_corrected_rk4_vs_dop853:
+    max_abs: 1.0e-8
+    both_direction_nrmse: 1.0e-8
+  terminal_correction_locality:
+    nonterminal_max_abs: 1.0e-12
+  attribution:
+    rule: >-
+      If the corrected refinements meet both frozen limits and each corrected
+      trajectory meets the DOP853 limits, report that the previous independent
+      check failed because the terminal jump was omitted from its breakpoint
+      set, and report DOP853 corroboration for this instance only. Otherwise
+      retain oracle validity as unresolved.
+statistics:
+  inferential_statistics: none
+  unit: one frozen instance
+  preserve_all_raw_outputs: true
+execution:
+  cpu_only: true
+  environment_must_match_parent_run: true
+  require_independent_code_review_accept: true
+  run_once: true
+  output_path: result/v0.3.7/rk4-endpoint-audit-20261009-01
+required_gates:
+  - calculate no hashes during audit calculations; after the report is complete, verify the full parent output manifest and archive all required hashes
+  - tests prove terminal discontinuity is detected and handled as a left-limit boundary
+  - independent code review ACCEPT of the runner, tests, contract, and protocol before audit execution; archive hashes only after the report is complete
+  - review receipt must bind the Git commit and exact five-file scope; the reviewed worktree must be clean
+  - no candidate solver reruns
+  - retain v0.3.6 reports, arrays, decisions, and status unchanged
