@@ -1,0 +1,69 @@
+version: CBCC-confirmatory-v1
+status: frozen_before_pilot
+scope:
+  question: Does a decision-time circuit-level future-loss-benefit estimator improve synthetic recurrent task loss under an equal multiply-accumulate budget?
+  claim_ceiling: Two synthetic diagnostic task families only; no real-world, general-AI, or connectome-specific claim.
+  primary_endpoint: Mean squared task loss per top-level task seed; confirmatory pair is eligible only when realized counted MAC differs by no more than 1% within every paired top-level seed.
+  primary_margin: 0.05 relative reduction against the single baseline selected on independent pilot data.
+architecture:
+  nodes: 32
+  circuits: 4
+  nodes_per_circuit: 8
+  ticks: 24
+  state_width: 8
+  recurrent_core: Fixed seeded directed ring reservoir; trainable family-specific ridge readout.
+  graph: Directed nearest-neighbor ring with self loops; adjacency entries 0.35 self, 0.28 previous, 0.14 next.
+  inference: CPU float64 NumPy; simultaneous circuit updates read the same pre-tick state.
+budget:
+  counted_unit: multiply-accumulate proxy (MAC), including estimator scoring.
+  per_tick: 2756
+  unused_budget: Carry forward within the top-level seed's eight sequences; each method receives the same cumulative MAC cap.
+  one_circuit_update: 2624
+  cbcc_scoring_and_features: 132
+  activity_and_static_salience_features: 32
+  common_readout_cost: Excluded from the policy-dependent MAC proxy and included in wall-clock timing for every method.
+  policies: [cbcc, random, fixed_frequency, activity, no_influence]
+  cbcc_rule: Pay 36 MAC for four linear scores, then update the highest estimated-benefit circuit if remaining budget permits.
+  comparator_rule: Every non-CBCC policy receives the same cumulative MAC cap with unused budget carried; no candidate state is computed for activity scoring.
+  activity_threshold: Select the most active circuit only when mean current input magnitude plus observed prior state-change norm exceeds 0.05.
+  no_influence: Rank circuits by precomputed readout-weight norm times current circuit-state norm; no future-loss labels or estimator.
+  timing: Wall-clock includes feature scoring, scheduling, local recurrent updates, readout, and trajectory result collection.
+tasks:
+  families:
+    sparse_key: Weak signed cue in one circuit predicts delayed output; stronger pulses in other circuits are distractors.
+    feedback_switch: Weak recurrent cue becomes task-relevant after a context switch; policy evaluated without influence-estimator training on this family.
+  sequences_per_seed: 8
+  train_seeds: [100, 101, 102, 103, 104, 105, 106, 107, 108, 109]
+  validation_seeds: [200, 201, 202, 203, 204, 205, 206, 207]
+  pilot_seeds: [300, 301, 302, 303, 304, 305, 306, 307]
+  confirmatory_seed_rule: Starting at 2000, per-family sample size determined only from independent pilot paired relative-improvement SD.
+  split_unit: top-level task seed; seeds do not overlap between train, pilot, and confirmatory sets.
+influence:
+  target: Mean future task loss if one circuit is held for the current tick minus loss if all circuits update, followed by all circuits updating for the remaining horizon.
+  horizon_ticks: 15
+  terminal_rule: Truncate the counterfactual horizon at the end of a sequence; every decision tick is labeled.
+  decision_features: Current and prior circuit state, current and prior input, local activity summaries, tick, and circuit index only.
+  estimator: Ridge linear regression fit only on sparse_key training-seed counterfactual records.
+  joint_additivity: Not assumed; report predicted sum of circuit benefits against measured joint-intervention benefit on held-out trajectory states.
+statistics:
+  model_selection: For each task family, choose readout ridge from [0.01, 0.1, 1, 10, 100, 1000] by 5-fold cross-validation grouped by top-level training seed; refit on all training seeds. Record selected ridge and fold scores before validation.
+  pilot: Select the lowest-loss eligible baseline separately per task family and estimate paired seed-level SD of relative loss improvement.
+  sample_size: Normal approximation, one-sided power 0.80, H0 margin 5%, H1 target 10%, alpha 0.05/8 conservative Holm first-step threshold; minimum 8 and maximum 512 top-level seeds per family.
+  confirmatory_comparisons: CBCC against each of four budget-matched controls in each of two task families; Holm correction across eight tests.
+  success: For each family, at least 5% relative reduction against its frozen pilot-selected baseline and Holm-adjusted p < .05.
+  statistics_unit: top-level task seed; sequences within seed are averaged and are not independent replicates.
+  interval: Paired bootstrap over top-level seed, 10,000 replicates, 95% percentile interval.
+secondary_metrics:
+  - Counterfactual influence ranking/prediction
+  - Critical-event recall at the cue and context-switch ticks
+  - Conditional recovery compute after a missed cue/switch, starting at target onset; report recovery probability and censoring fraction
+  - Wall-clock latency, counted MAC, and circuit updates
+retention:
+  - Append raw seed metrics and per-tick event JSONL.
+  - On exception, preserve failure record and stop without deleting prior rows.
+  - No hashes are calculated until experiments and reports are complete.
+stop_rules:
+  - Do not begin confirmatory evaluation until tests, code review, and pilot-derived freeze file pass review.
+  - Do not tune model, budget, estimator, seeds, or comparator after confirmatory freeze.
+  - Budget eligibility is determined per paired top-level seed, not by a cross-seed average; a policy pair failing the 1% realized-MAC bound is ineligible for the primary comparison.
+  - A software or causal test failure blocks confirmatory execution.
